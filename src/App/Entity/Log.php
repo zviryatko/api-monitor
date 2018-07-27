@@ -16,26 +16,26 @@ class Log implements \JsonSerializable
    * @ORM\GeneratedValue(strategy="IDENTITY")
    * @var int
    */
-  private $id;
+    private $id;
 
   /**
    * @ORM\ManyToOne(targetEntity="Job")
    * @ORM\JoinColumn(name="job_id", referencedColumnName="id")
    * @var \App\Entity\Job
    */
-  private $job;
+    private $job;
 
   /**
    * @ORM\Column(name="up", type="boolean")
    * @var bool
    */
-  private $up;
+    private $up;
 
   /**
    * @ORM\Column(name="created", type="datetime")
    * @var \DateTime
    */
-  private $created;
+    private $created;
 
   /**
    * Application constructor.
@@ -43,48 +43,52 @@ class Log implements \JsonSerializable
    * @param $up
    * @param $created
    */
-  public function __construct(Job $job, bool $up, \DateTime $created = NULL)
-  {
-    $this->job = $job;
-    $this->up = $up;
-    $this->created = $created ?? new \DateTime('now');
-  }
+    public function __construct(Job $job, bool $up, \DateTime $created = null)
+    {
+        $this->job = $job;
+        $this->up = $up;
+        $this->created = $created ?? new \DateTime('now');
+    }
 
-  public function jsonSerialize()
-  {
-    return [
-      'id' => $this->id,
-      'job' => $this->job->jsonSerialize(),
-      'up' => $this->up,
-      'created' => $this->created->getTimestamp(),
-    ];
-  }
+    public function jsonSerialize()
+    {
+        return [
+        'id' => $this->id,
+        'job' => $this->job->jsonSerialize(),
+        'up' => $this->up,
+        'created' => $this->created->getTimestamp(),
+        ];
+    }
 
   /**
    * @return int
    */
-  public function getId(): int {
-    return $this->id;
-  }
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
   /**
    * @return string
    */
-  public function getJob(): Job {
-    return $this->job;
-  }
+    public function getJob(): Job
+    {
+        return $this->job;
+    }
 
   /**
    * @return bool
    */
-  public function isUp(): bool {
-    return $this->up;
-  }
+    public function isUp(): bool
+    {
+        return $this->up;
+    }
 
   /**
    * @return \DateTime
    */
-  public function getCreated(): \DateTime {
-    return $this->created;
-  }
+    public function getCreated(): \DateTime
+    {
+        return $this->created;
+    }
 }

@@ -5,6 +5,11 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
+            {% if jobs is empty %}
+                <div class="alert alert-dark" role="alert">
+                    There's no jobs, but you can <a href="{{ path('job.add') }}">add</a> one.
+                </div>
+            {% else %}
             <table class="table">
                 <thead class="thead-light">
                 <tr>
@@ -20,15 +25,12 @@
                         <th scope="row">{{ job.id }}</th>
                         <td>{{ job.name }}</td>
                         <td><code>{{ job.command|truncate(50) }}</code></td>
-                        <td>
-                            <a href="{{ path('job.edit', {'id': job.id}) }}">Edit</a>
-                            |
-                            <a href="{{ path('job.delete', {'id': job.id}) }}">Delete</a>
-                        </td>
+                        <td><a href="{{ path('job.edit', {'id': job.id}) }}">Edit</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

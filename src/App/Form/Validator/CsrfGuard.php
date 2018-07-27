@@ -6,7 +6,6 @@
 
 namespace App\Form\Validator;
 
-
 use Zend\Expressive\Csrf\CsrfGuardInterface;
 use Zend\Validator\AbstractValidator;
 
@@ -26,6 +25,9 @@ class CsrfGuard extends AbstractValidator
         self::NOT_SAME => "The form submitted did not originate from the expected site",
     ];
 
+    /**
+     * @var \Zend\Expressive\Csrf\CsrfGuardInterface
+     */
     private $guard;
 
     public function __construct(CsrfGuardInterface $guard, $options = null)
@@ -52,6 +54,5 @@ class CsrfGuard extends AbstractValidator
             return false;
         }
         return true;
-
     }
 }

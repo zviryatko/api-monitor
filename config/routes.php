@@ -35,7 +35,6 @@ use Zend\Expressive\MiddlewareFactory;
 return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
     $app->get('/', App\Handler\HomePageHandler::class, 'home');
     $app->get('/job', App\Handler\JobListHandler::class, 'job.list');
-    $app->route('/job/add', App\Handler\JobAddHandler::class, ['GET', 'POST'], 'job.add');
-    $app->route('/job/{id:\d}', App\Handler\JobEditHandler::class, ['GET', 'POST'], 'job.edit');
-    $app->route('/job/{id:\d}/delete', App\Handler\JobEditHandler::class, ['GET', 'POST'], 'job.delete');
+    $app->route('/job/add', App\Handler\JobFormHandler::class, ['GET', 'POST'], 'job.add');
+    $app->route('/job/{id:\d}', App\Handler\JobFormHandler::class, ['GET', 'POST'], 'job.edit');
 };

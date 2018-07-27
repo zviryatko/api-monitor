@@ -24,6 +24,7 @@ class ConfigProvider
             'dependencies' => $this->getDependencies(),
             'console' => $this->getConsole(),
             'templates' => $this->getTemplates(),
+            'doctrine' => $this->getDoctrine(),
         ];
     }
 
@@ -38,8 +39,7 @@ class ConfigProvider
             'factories' => [
                 Handler\HomePageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\JobListHandler::class => Handler\PageHandlerFactory::class,
-                Handler\JobAddHandler::class => Handler\PageHandlerFactory::class,
-                Handler\JobEditHandler::class => Handler\PageHandlerFactory::class,
+                Handler\JobFormHandler::class => Handler\PageHandlerFactory::class,
                 Command\Monitor::class => Command\CommandFactory::class,
                 Command\JobAdd::class => Command\CommandFactory::class,
                 Command\JobRemove::class => Command\CommandFactory::class,
@@ -74,6 +74,25 @@ class ConfigProvider
                 'app' => ['templates/app'],
                 'error' => ['templates/error'],
                 'layout' => ['templates/layout'],
+            ],
+        ];
+    }
+
+    public function getDoctrine()
+    {
+        return [
+            'driver' => [
+                'orm_default' => [
+                    'class' => \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain::class,
+                    'drivers' => [
+                        'App\Entity' => 'app_entity',
+                    ],
+                ],
+                'app_entity' => [
+                    'class' => \Doctrine\ORM\Mapping\Driver\AnnotationDriver::class,
+                    'cache' => 'array',
+                    'paths' => __DIR__ . '/Entity',
+                ],
             ],
         ];
     }
