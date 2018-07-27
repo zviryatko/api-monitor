@@ -5,26 +5,23 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <select class="custom-select" id="precise" onchange="window.precise()">
-                <option selected>Choose...</option>
-                <option value="hours">Few hours</option>
-                <option value="day">Day</option>
-                <option value="week">Week</option>
-            </select>
-            <script>
-                function precise() {
-                    window.location = window.location.origin + '?precise=' + document.querySelector('#precise').value
-                }
-                function getParameterByName(name, url) {
-                    if (!url) url = window.location.href;
-                    name = name.replace(/[\[\]]/g, '\\$&');
-                    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                        results = regex.exec(url);
-                    if (!results) return null;
-                    if (!results[2]) return '';
-                    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-                }
-            </script>
+            <ul class="nav">
+                <li class="nav-item">
+                    <span class="nav-link disabled">Show logs for</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{{ precise == 'hours' ? ' disabled' }}" href="{{ path(null, {}, {precise: 'hours'}) }}">Few hour</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{{ precise == 'day' ? ' disabled' }}" href="{{ path(null, {}, {precise: 'day'}) }}">Day</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{{ precise == 'week' ? ' disabled' }}" href="{{ path(null, {}, {precise: 'week'}) }}">Week</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{{ precise == 'month' ? ' disabled' }}" href="{{ path(null, {}, {precise: 'month'}) }}">Month</a>
+                </li>
+            </ul>
             <div class="card">
                 {% for job in data %}
                     <div class="card-header">
@@ -68,18 +65,18 @@
 
                                                 // Optional; add a title and set the width and height of the chart
                                                 var min = new Date()
-                                                switch(getParameterByName('precise')) {
+                                                switch('{{ precise }}') {
                                                     case 'hours':
-                                                        min.setTime(min.getTime() - (min.getDay() ? min.getDay() : 1) * 4 * 60 * 60 * 1000);
+                                                        min.setTime(min.getTime() - 4 * 60 * 60 * 1000);
                                                         break;
                                                     case 'day':
-                                                        min.setTime(min.getTime() - (min.getDay() ? min.getDay() : 1) * 24 * 60 * 60 * 1000);
+                                                        min.setTime(min.getTime() - 24 * 60 * 60 * 1000);
                                                         break;
                                                     case 'week':
-                                                        min.setTime(min.getTime() - (min.getDay() ? min.getDay() : 7) * 24 * 60 * 60 * 1000);
+                                                        min.setTime(min.getTime() - 7 * 24 * 60 * 60 * 1000);
                                                         break;
                                                     default:
-                                                        min.setTime(min.getTime() - 10 * (min.getDay() ? min.getDay() : 7) * 24 * 60 * 60 * 1000);
+                                                        min.setTime(min.getTime() - 4 * 7 * 24 * 60 * 60 * 1000);
                                                 }
                                                 var options = {
                                                     'height': 100,
