@@ -12,8 +12,12 @@ use Zend\Diactoros\Response\HtmlResponse;
 
 class HomePageHandler extends BasePageHandler implements RequestHandlerInterface
 {
+    use AuthorizationTrait;
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        if (!$this->isAuthorized($request)) {
+            return new HtmlResponse($this->template->render('app::promo'));
+        }
         $precise = $request->getQueryParams()['precise'] ?? 'hours';
         $options = [
             'hours' => '4 hours ago',
@@ -39,6 +43,6 @@ class HomePageHandler extends BasePageHandler implements RequestHandlerInterface
             }
             $data[$job]['logs'][] = $log->jsonSerialize();
         }
-        return new HtmlResponse($this->template->render('app::home-page', ['data' => $data, 'precise' => $precise]));
+        return new HtmlResponse($this->template->render('app::home', ['data' => $data, 'precise' => $precise]));
     }
 }

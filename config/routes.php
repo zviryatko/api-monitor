@@ -37,4 +37,6 @@ return function (Application $app, MiddlewareFactory $factory, ContainerInterfac
     $app->get('/job', App\Handler\JobListHandler::class, 'job.list');
     $app->route('/job/add', App\Handler\JobFormHandler::class, ['GET', 'POST'], 'job.add');
     $app->route('/job/{id:\d}', App\Handler\JobFormHandler::class, ['GET', 'POST'], 'job.edit');
+    $app->route('/user/login', App\Handler\LoginPageHandler::class, ['GET'], 'user.login');
+    $app->route('/user/logout/{token}', App\Handler\LogoutPageHandler::class, ['GET'], 'user.logout');
 };

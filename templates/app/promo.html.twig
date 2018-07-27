@@ -1,0 +1,15 @@
+{% extends '@layout/default.html.twig' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">Monitor your API easily!</h1>
+        <p class="lead">You no longer need to constantly monitor the external API or check every Friday night whether your website has fallen<br /> API Monitor will do everything for you!</p>
+        <hr class="my-4">
+        <p>Make it easily in <strong>five</strong> clicks!. You just need to login and add one monitoring job.</p>
+        <p class="lead">
+            <a class="btn btn-success btn-lg" href="{{ path('user.login') }}" role="button"><i class="fa fa-hand-pointer"></i> Start monitoring now!</a>
+        </p>
+    </div>
+{% endblock %}

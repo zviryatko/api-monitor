@@ -1,0 +1,17 @@
+{% extends "layout/default.html.twig" %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1>Login with your Google account</h1>
+            <a href="{{ login_redirect_url }}" class="btn btn-lg btn-danger"><i class="fab fa-google-plus"></i> Login</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer_scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js"></script>
+    <script src="{{ asset('assets/contact.js', version=1.0) }}"></script>
+{% endblock %}

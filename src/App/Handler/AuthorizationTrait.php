@@ -1,0 +1,41 @@
+<?php
+/**
+ * @file
+ * Contains AuthorizationTrait
+ */
+
+namespace App\Handler;
+
+
+use App\Entity\Profile;
+use App\Helper\AuthenticationMiddleware;
+use Psr\Http\Message\ServerRequestInterface;
+use Zend\Expressive\Session\SessionMiddleware;
+
+trait AuthorizationTrait
+{
+    protected function isAuthorized(ServerRequestInterface $request): bool
+    {
+        $profile = $request->getAttribute(AuthenticationMiddleware::PROFILE_ATTRIBUTE);
+        return $profile instanceof Profile;
+    }
+
+    protected function authorize(ServerRequestInterface $request, Profile $profile): void
+    {
+        /** @var \Zend\Expressive\Session\SessionInterface $session */
+        $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+        $session->set(AuthenticationMiddleware::USER_ID_SESSION_KEY, $profile->id());
+    }
+
+    protected function forget(ServerRequestInterface $request): void
+    {
+        /** @var \Zend\Expressive\Session\SessionInterface $session */
+        $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
+        $session->clear();
+    }
+
+    protected function getProfile(ServerRequestInterface $request): ?Profile
+    {
+        return $request->getAttribute(AuthenticationMiddleware::PROFILE_ATTRIBUTE);
+    }
+}

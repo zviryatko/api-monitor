@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Service\GoogleClientFactory;
+
 /**
  * The configuration provider for the App module
  *
@@ -11,6 +13,7 @@ namespace App;
  */
 class ConfigProvider
 {
+
     /**
      * Returns the configuration array
      *
@@ -25,6 +28,7 @@ class ConfigProvider
             'console' => $this->getConsole(),
             'templates' => $this->getTemplates(),
             'doctrine' => $this->getDoctrine(),
+            'twig' => $this->getTwig(),
         ];
     }
 
@@ -35,17 +39,30 @@ class ConfigProvider
     {
         return [
             'invokables' => [
+                Service\AlertsInterface::class => Service\Alerts::class,
+                Twig\Extensions\AuthenticationHelper::class => Twig\Extensions\AuthenticationHelper::class,
             ],
             'factories' => [
                 Handler\HomePageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\JobListHandler::class => Handler\PageHandlerFactory::class,
                 Handler\JobFormHandler::class => Handler\PageHandlerFactory::class,
+                Handler\LogoutPageHandler::class => Handler\PageHandlerFactory::class,
+                Handler\LoginPageHandler::class => Handler\LoginPageHandlerFactory::class,
+                Handler\RegisterPageHandler::class => Handler\PageHandlerFactory::class,
+                Handler\StaticPageHandler::class => Handler\PageHandlerFactory::class,
+                Handler\UserPageHandler::class => Handler\PageHandlerFactory::class,
                 Command\Monitor::class => Command\CommandFactory::class,
                 Command\JobAdd::class => Command\CommandFactory::class,
                 Command\JobRemove::class => Command\CommandFactory::class,
                 Command\JobExec::class => Command\CommandFactory::class,
                 Command\JobList::class => Command\CommandFactory::class,
                 Command\MonitorRunAll::class => Command\CommandFactory::class,
+                Helper\TemplateHelperMiddleware::class => Helper\TemplateHelperMiddlewareFactory::class,
+                Helper\AuthenticationMiddleware::class => [Helper\AuthenticationMiddleware::class, 'factory'],
+                Twig\Extensions\ActiveClass::class => [Twig\Extensions\ActiveClass::class, 'factory'],
+                Twig\Extensions\ElementError::class => [Twig\Extensions\ElementError::class, 'factory'],
+                \Zend\Mail\Transport\TransportInterface::class => Container\MailTransportFactory::class,
+                \Google_Client::class => GoogleClientFactory::class
             ],
         ];
     }
@@ -93,6 +110,17 @@ class ConfigProvider
                     'cache' => 'array',
                     'paths' => __DIR__ . '/Entity',
                 ],
+            ],
+        ];
+    }
+
+    public function getTwig()
+    {
+        return [
+            'extensions' => [
+                \App\Twig\Extensions\ActiveClass::class,
+                \App\Twig\Extensions\ElementError::class,
+                \App\Twig\Extensions\AuthenticationHelper::class,
             ],
         ];
     }

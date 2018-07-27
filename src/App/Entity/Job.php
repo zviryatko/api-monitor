@@ -6,51 +6,58 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Zend\Form\Annotation;
 use Symfony\Component\Process\Process;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="job")
- * @Annotation\Name("job")
+ * @Doctrine\ORM\Mapping\Entity
+ * @Doctrine\ORM\Mapping\Table(name="job")
+ * @Zend\Form\Annotation\Name("job")
  */
 class Job implements \JsonSerializable
 {
 
     /**
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Doctrine\ORM\Mapping\Id
+     * @Doctrine\ORM\Mapping\Column(name="id", type="integer")
+     * @Doctrine\ORM\Mapping\GeneratedValue(strategy="IDENTITY")
      * @var int
      */
     private $id;
 
     /**
-     * @ORM\Column(name="name", type="string", length=32)
-     * @Annotation\Type("Zend\Form\Element\Text")
-     * @Annotation\Options({"label":"Job name:", "class": "form-control"})
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="Profile")
+     * @Doctrine\ORM\Mapping\JoinColumn(name="profile", referencedColumnName="id", nullable=false)
+     * @var \App\Entity\Profile
+     */
+    private $profile;
+
+    /**
+     * @Doctrine\ORM\Mapping\Column(name="name", type="string", length=32, nullable=false)
+     * @Zend\Form\Annotation\Type("Zend\Form\Element\Text")
+     * @Zend\Form\Annotation\Options({"label":"Job name:", "class": "form-control"})
      * @var string
      */
     private $name;
 
     /**
-     * @ORM\Column(name="command", type="text")
-     * @Annotation\Type("Zend\Form\Element\Textarea")
-     * @Annotation\Options({"label":"The command to run:", "class": "form-control"})
+     * @Doctrine\ORM\Mapping\Column(name="command", type="text", nullable=false)
+     * @Zend\Form\Annotation\Type("Zend\Form\Element\Textarea")
+     * @Zend\Form\Annotation\Options({"label":"The command to run:", "class": "form-control"})
      * @var string
      */
     private $command;
 
     /**
-     * Application constructor.
+     * Job constructor.
      *
-     * @param $name
-     * @param $command
+     * @param string $name
+     * @param int $profile
+     * @param string $command
      */
-    public function __construct(string $name, string $command)
+    public function __construct(string $name, Profile $profile, string $command)
     {
         $this->name = $name;
+        $this->profile = $profile;
         $this->command = $command;
     }
 
@@ -58,6 +65,7 @@ class Job implements \JsonSerializable
     {
         return [
             'id' => $this->id,
+            'profile' => $this->profile->jsonSerialize(),
             'name' => $this->name,
             'command' => $this->command,
         ];
@@ -97,5 +105,13 @@ class Job implements \JsonSerializable
         $process = new Process($this->getCommand());
         $process->run();
         return $process->isSuccessful();
+    }
+
+    /**
+     * @return \App\Entity\Profile
+     */
+    public function profile(): \App\Entity\Profile
+    {
+        return $this->profile;
     }
 }

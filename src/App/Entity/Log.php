@@ -2,47 +2,47 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
- * @ORM\Entity
- * @ORM\Table(name="log")
+ * @Doctrine\ORM\Mapping\Entity
+ * @Doctrine\ORM\Mapping\Table(name="log")
  */
 class Log implements \JsonSerializable
 {
-  /**
-   * @ORM\Id
-   * @ORM\Column(name="id", type="integer")
-   * @ORM\GeneratedValue(strategy="IDENTITY")
-   * @var int
-   */
+
+    /**
+     * @Doctrine\ORM\Mapping\Id
+     * @Doctrine\ORM\Mapping\Column(name="id", type="integer")
+     * @Doctrine\ORM\Mapping\GeneratedValue(strategy="IDENTITY")
+     * @var int
+     */
     private $id;
 
-  /**
-   * @ORM\ManyToOne(targetEntity="Job")
-   * @ORM\JoinColumn(name="job_id", referencedColumnName="id")
-   * @var \App\Entity\Job
-   */
+    /**
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="Job")
+     * @Doctrine\ORM\Mapping\JoinColumn(name="job_id", referencedColumnName="id", nullable=false)
+     * @var \App\Entity\Job
+     */
     private $job;
 
-  /**
-   * @ORM\Column(name="up", type="boolean")
-   * @var bool
-   */
+    /**
+     * @Doctrine\ORM\Mapping\Column(name="up", type="boolean", nullable=false)
+     * @var bool
+     */
     private $up;
 
-  /**
-   * @ORM\Column(name="created", type="datetime")
-   * @var \DateTime
-   */
+    /**
+     * @Doctrine\ORM\Mapping\Column(name="created", type="datetime", nullable=false)
+     * @var \DateTime
+     */
     private $created;
 
-  /**
-   * Application constructor.
-   * @param $name
-   * @param $up
-   * @param $created
-   */
+    /**
+     * Log constructor.
+     *
+     * @param \App\Entity\Job $job
+     * @param bool $up
+     * @param \DateTime $created
+     */
     public function __construct(Job $job, bool $up, \DateTime $created = null)
     {
         $this->job = $job;
@@ -53,40 +53,40 @@ class Log implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-        'id' => $this->id,
-        'job' => $this->job->jsonSerialize(),
-        'up' => $this->up,
-        'created' => $this->created->getTimestamp(),
+            'id' => $this->id,
+            'job' => $this->job->jsonSerialize(),
+            'up' => $this->up,
+            'created' => $this->created->getTimestamp(),
         ];
     }
 
-  /**
-   * @return int
-   */
+    /**
+     * @return int
+     */
     public function getId(): int
     {
         return $this->id;
     }
 
-  /**
-   * @return string
-   */
+    /**
+     * @return string
+     */
     public function getJob(): Job
     {
         return $this->job;
     }
 
-  /**
-   * @return bool
-   */
+    /**
+     * @return bool
+     */
     public function isUp(): bool
     {
         return $this->up;
     }
 
-  /**
-   * @return \DateTime
-   */
+    /**
+     * @return \DateTime
+     */
     public function getCreated(): \DateTime
     {
         return $this->created;

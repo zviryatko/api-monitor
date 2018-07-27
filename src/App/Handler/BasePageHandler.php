@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
+use App\Service\AlertsInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Zend\Expressive\Router;
 use Zend\Expressive\Template;
 
-class BasePageHandler
+abstract class BasePageHandler
 {
     protected $router;
 
@@ -15,13 +16,17 @@ class BasePageHandler
 
     protected $storage;
 
+    protected $alerts;
+
     public function __construct(
         Router\RouterInterface $router,
         Template\TemplateRendererInterface $template,
-        EntityManagerInterface $storage
+        EntityManagerInterface $storage,
+        AlertsInterface $alerts
     ) {
         $this->router = $router;
         $this->template = $template;
         $this->storage = $storage;
+        $this->alerts = $alerts;
     }
 }

@@ -1,0 +1,15 @@
+<?php
+
+return [
+    'smtp' => [
+        'name' => 'yourdomain.com',
+        'host' => 'smtp.gmail.com',
+        'port' => 587,
+        'connection_class' => 'plain',
+        'connection_config' => array(
+            'username' => 'user',
+            'password' => 'pass',
+            'ssl' => 'tls',
+        ),
+    ],
+];

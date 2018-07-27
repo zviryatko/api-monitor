@@ -22,8 +22,13 @@ use Zend\Validator\InArray;
 class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
 {
 
+    use AuthorizationTrait;
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        if (!$this->isAuthorized($request)) {
+            return new HtmlResponse($this->template->render('error::403'), 404);
+        }
         $id = $request->getAttribute('id');
         if ($id) {
             $job = $this->storage->find(Job::class, $id);
@@ -31,7 +36,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
                 return new HtmlResponse($this->template->render('error::404'), 404);
             }
         } else {
-            $job = new Job('', '');
+            $job = new Job('', $this->getProfile($request), '');
         }
         /** @var \Zend\Expressive\Csrf\CsrfGuardInterface $guard */
         $guard = $request->getAttribute(CsrfMiddleware::GUARD_ATTRIBUTE);
@@ -62,12 +67,14 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
         $form->getInputFilter()->add([
             'name' => 'op',
             'required' => true,
-            'validators' => [new InArray([
-                'haystack' => $job->getId() ? ['update', 'delete'] : ['add'],
-                'messageTemplates' => [
-                    InArray::NOT_IN_ARRAY => 'Wrong action, please use Add, Update or Delete button.',
-                ],
-            ])],
+            'validators' => [
+                new InArray([
+                    'haystack' => $job->getId() ? ['update', 'delete'] : ['add'],
+                    'messageTemplates' => [
+                        InArray::NOT_IN_ARRAY => 'Wrong action, please use Add, Update or Delete button.',
+                    ],
+                ]),
+            ],
         ]);
 
         // Validate PSR-7 request and get a validation result
@@ -84,8 +91,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
                 $this->storage->remove($job);
                 $this->storage->flush();
                 return new RedirectResponse($this->router->generateUri('job.list'));
-            }
-            elseif ($form->isValid()) {
+            } elseif ($form->isValid()) {
                 $job = $form->getObject();
                 $this->storage->persist($job);
                 $this->storage->flush();
@@ -94,7 +100,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
             $token = $this->getCsrfToken($request);
         }
 
-        return new HtmlResponse($this->template->render('app::job-form-page', [
+        return new HtmlResponse($this->template->render('app::job', [
             'token' => $token,
             'job' => [
                 'id' => $job->getId(),

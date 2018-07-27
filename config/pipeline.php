@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Helper\AuthenticationMiddleware;
+use App\Helper\TemplateHelperMiddleware;
 use Psr\Container\ContainerInterface;
 use Zend\Expressive\Application;
 use Zend\Expressive\Handler\NotFoundHandler;
@@ -18,11 +20,15 @@ use Zend\Stratigility\Middleware\ErrorHandler;
 /**
  * Setup middleware pipeline:
  */
-return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container) : void {
+return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
     // The error handler should be the first (most outer) middleware to catch
     // all Exceptions.
     $app->pipe(ErrorHandler::class);
+    $app->pipe(\Zend\Expressive\Session\SessionMiddleware::class);
+    $app->pipe(\Zend\Expressive\Csrf\CsrfMiddleware::class);
+    $app->pipe(AuthenticationMiddleware::class);
     $app->pipe(ServerUrlMiddleware::class);
+    $app->pipe(TemplateHelperMiddleware::class);
 
     // Pipe more middleware here that you want to execute on every request:
     // - bootstrapping
@@ -41,9 +47,6 @@ return function (Application $app, MiddlewareFactory $factory, ContainerInterfac
     // - $app->pipe('/api', $apiMiddleware);
     // - $app->pipe('/docs', $apiDocMiddleware);
     // - $app->pipe('/files', $filesMiddleware);
-
-    $app->pipe(\Zend\Expressive\Session\SessionMiddleware::class);
-    $app->pipe(\Zend\Expressive\Csrf\CsrfMiddleware::class);
 
     // Register the routing middleware in the middleware pipeline.
     // This middleware registers the Zend\Expressive\Router\RouteResult request attribute.

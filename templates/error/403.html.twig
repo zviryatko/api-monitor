@@ -1,0 +1,13 @@
+{% extends '@layout/default.html.twig' %}
+
+{% block title %}403 Access Denied{% endblock %}
+
+{% block content %}
+    <h1>Oops!</h1>
+    <h2>This is awkward.</h2>
+    <p>We encountered a 403 Access Denied error.</p>
+    <p>
+        You are looking for something that you doesn't have permission to access. Try to <a
+                href="{{ path('user.login') }}">login</a>.
+    </p>
+{% endblock %}
