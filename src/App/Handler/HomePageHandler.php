@@ -40,8 +40,15 @@ class HomePageHandler extends BasePageHandler implements RequestHandlerInterface
             $job = $log->getJob()->getId();
             if (empty($data[$job])) {
                 $data[$job] = $log->getJob()->jsonSerialize();
+                $data[$job]['pie'] = ['up' => 0, 'down' => 0];
             }
             $data[$job]['logs'][] = $log->jsonSerialize();
+            if ($log->isUp()) {
+                $data[$job]['pie']['up']++;
+            }
+            else {
+                $data[$job]['pie']['down']++;
+            }
         }
         return new HtmlResponse($this->template->render('app::home', ['data' => $data, 'precise' => $precise]));
     }

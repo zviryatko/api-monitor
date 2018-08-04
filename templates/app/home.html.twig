@@ -33,7 +33,7 @@
                         <div class="card-body">
                             {% if job.logs is not empty %}
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-3">
                                         <ul class="list-group list-group-flush" style="height: 100px; overflow: auto">
                                             {% for log in job.logs %}
                                                 <li class="list-group-item">
@@ -48,8 +48,30 @@
                                         </ul>
                                     </div>
                                     {% if job.logs|length > 1 %}
+                                        <div class="col-md-3">
+                                            <div id="piechart-{{ job.id }}" class="chart chart-pie" style="height: 100px;"></div>
+                                            <script>
+                                                google.charts.load('current', {'packages': ['corechart']});
+                                                google.charts.setOnLoadCallback(drawPieChart);
+
+                                                function drawPieChart() {
+                                                    var data = google.visualization.arrayToDataTable([
+                                                        ['Foo', 'Bar'],
+                                                        ['Up',     {{ job.pie.up }}],
+                                                        ['Down', {{ job.pie.down }}]
+                                                    ]);
+                                                    var options = {
+                                                        is3D: true,
+                                                    };
+
+                                                    var chart = new google.visualization.PieChart(document.getElementById('piechart-{{ job.id }}'));
+
+                                                    chart.draw(data, options);
+                                                }
+                                            </script>
+                                        </div>
                                         <div class="col-md-6">
-                                            <div id="piechart-{{ job.id }}"></div>
+                                            <div id="linechart-{{ job.id }}"></div>
                                             <script type="text/javascript">
                                                 // Load google charts
                                                 google.charts.load('current', {'packages': ['corechart', 'line']});
@@ -115,7 +137,7 @@
                                                     };
 
                                                     // Display the chart inside the <div> element with id="piechart"
-                                                    var chart = new google.visualization.LineChart(document.getElementById('piechart-{{ job.id }}'));
+                                                    var chart = new google.visualization.LineChart(document.getElementById('linechart-{{ job.id }}'));
                                                     chart.draw(data, options);
                                                 }
                                             </script>
