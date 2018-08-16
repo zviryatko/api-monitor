@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'dependencies' => [
+        'invokables' => [
+            Twig_Extensions_Extension_Text::class => Twig_Extensions_Extension_Text::class
+        ],
+    ],
     'templates' => [
         'debug' => true,
         'extension' => 'html.twig',
@@ -12,7 +17,7 @@ return [
         'assets_url' => '/',
         'assets_version' => '0.1',
         'extensions' => [
-            new Twig_Extensions_Extension_Text,
+            Twig_Extensions_Extension_Text::class,
         ],
         'optimizations' => -1, // -1: Enable all (default), 0: disable optimizations
     ],
