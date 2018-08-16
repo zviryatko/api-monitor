@@ -46,6 +46,9 @@ class ConfigProvider
                 Handler\HomePageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\JobListHandler::class => Handler\PageHandlerFactory::class,
                 Handler\JobFormHandler::class => Handler\PageHandlerFactory::class,
+                Handler\ProjectPageHandler::class => Handler\PageHandlerFactory::class,
+                Handler\ProjectListHandler::class => Handler\PageHandlerFactory::class,
+                Handler\ProjectFormHandler::class => Handler\PageHandlerFactory::class,
                 Handler\LogoutPageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\LoginPageHandler::class => Handler\LoginPageHandlerFactory::class,
                 Handler\RegisterPageHandler::class => Handler\PageHandlerFactory::class,
@@ -91,6 +94,7 @@ class ConfigProvider
                 'app' => ['templates/app'],
                 'error' => ['templates/error'],
                 'layout' => ['templates/layout'],
+                'partial' => ['templates/partial'],
             ],
         ];
     }

@@ -1,0 +1,104 @@
+{% extends '@layout/default.html.twig' %}
+
+{% block title %}
+    {% if project.id %}
+        Edit {{ project.name }}
+    {% else %}
+        Add project
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            {% for field, messages in errors %}
+                {% if field not in ['name', 'alias', 'public'] %}
+                    {% for error in messages %}
+                        <div class="alert alert-danger" role="alert">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            <form method="post">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text"
+                           class="form-control{% if errors.name is defined %} is-invalid{% elseif submitted %} is-valid{% endif %}"
+                           id="name" name="name" aria-describedby="nameHelp" placeholder="My New Cool Project"
+                           value="{{ project.name|escape('html_attr') }}">
+                    <small id="nameHelp" class="form-text text-muted">Project name like <code>My New Cool Project</code>.
+                    </small>
+                    {% if errors.name is defined %}
+                        {% for error in errors.name %}
+                            <div class="alert alert-danger" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="alias">Alias</label>
+                    <input type="text"
+                           class="form-control{% if errors.alias is defined %} is-invalid{% elseif submitted %} is-valid{% endif %}"
+                           name="alias" id="alias" aria-describedby="aliasHelp" placeholder="my-new-cool-project"
+                           value="{{ project.alias|escape('html_attr') }}"/>
+                    <small id="aliasHelp" class="form-text text-muted">Project path alias that will be public accessible
+                        like <code>my-new-cool-project</code>.
+                    </small>
+                    {% if errors.alias is defined %}
+                        {% for error in errors.alias %}
+                            <div class="alert alert-danger" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox"
+                           class="form-check-input{% if errors.public is defined %} is-invalid{% elseif submitted %} is-valid{% endif %}"
+                           name="public" id="public" aria-describedby="publicHelp"
+                           value="1"{% if project.public %} checked="checked"{% endif %} />
+                    <label class="form-check-label" for="public">Is public</label>
+                    <small id="publicHelp" class="form-text text-muted">You project can be public accessible.</small>
+                    {% if errors.public is defined %}
+                        {% for error in errors.public %}
+                            <div class="alert alert-danger" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                {#
+                <div class="form-group">
+                    <label for="invite">Invite collaborators</label>
+                    <input type="text" id="invite" class="form-control" placeholder="jdoe@company.com, ltorvalds@company.com, ..." />
+                </div>
+
+                <div class="form-group">
+                    <ul class="list-group list-group-flush" style="max-height: 200px; overflow: auto">
+                        <li class="list-group-item">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" checked="checked">
+                                    Some user &lt;test@example.com&gt;
+                                </label>
+                            </div>
+                        </li>
+                        {% for i in range(0, 5) %}
+                            <li class="list-group-item">
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" type="checkbox" checked="checked">
+                                        test@example.com <em class="text-danger">(waiting for invite)</em>
+                                    </label>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                #}
+
+                <input type="hidden" name="_csrf" value="{{ token }}">
+                {% if project.id is not empty %}
+                    <button type="submit" class="btn btn-success" name="op" value="update">Update</button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary" name="op" value="add">Add</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

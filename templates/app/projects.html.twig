@@ -1,0 +1,44 @@
+{% extends '@layout/default.html.twig' %}
+
+{% block title %}Add project{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            {% if projects is empty %}
+                <div class="alert alert-dark" role="alert">
+                    There's no projects, but you can <a href="{{ path('project.add') }}">add</a> one.
+                </div>
+            {% else %}
+            <table class="table">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Alias</th>
+                    <th scope="col">Jobs</th>
+                    <th scope="col">Public</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for project in projects %}
+                    <tr>
+                        <td><a href="{{ path('project', {'alias': project.alias}) }}">{{ project.name }}</a></td>
+                        <td><code>{{ project.alias }}</code></td>
+                        <td>{{ project.jobs|length }}</td>
+                        <td>
+                            {% if project.public %}
+                                <i class="fas fa-check-circle "></i>
+                            {% else %}
+                                <i class="fas fa-times"></i>
+                            {% endif %}
+                        </td>
+                        <td><a href="{{ path('project.edit', {'id': project.id}) }}">Edit</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

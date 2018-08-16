@@ -37,6 +37,10 @@ return function (Application $app, MiddlewareFactory $factory, ContainerInterfac
     $app->get('/job', App\Handler\JobListHandler::class, 'job.list');
     $app->route('/job/add', App\Handler\JobFormHandler::class, ['GET', 'POST'], 'job.add');
     $app->route('/job/{id:\d}', App\Handler\JobFormHandler::class, ['GET', 'POST'], 'job.edit');
+    $app->get('/p/{alias}', App\Handler\ProjectPageHandler::class, 'project');
+    $app->get('/project', App\Handler\ProjectListHandler::class, 'project.list');
+    $app->route('/project/add', App\Handler\ProjectFormHandler::class, ['GET', 'POST'], 'project.add');
+    $app->route('/project/{id:\d}', App\Handler\ProjectFormHandler::class, ['GET', 'POST'], 'project.edit');
     $app->route('/user/login', App\Handler\LoginPageHandler::class, ['GET'], 'user.login');
     $app->route('/user/logout/{token}', App\Handler\LogoutPageHandler::class, ['GET'], 'user.logout');
 };

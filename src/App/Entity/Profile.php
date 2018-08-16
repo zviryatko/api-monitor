@@ -21,25 +21,25 @@ class Profile implements \JsonSerializable
      * @Doctrine\ORM\Mapping\GeneratedValue(strategy="IDENTITY")
      * @var string
      */
-    protected $id;
+    private $id;
 
     /**
      * @Doctrine\ORM\Mapping\Column(type="string", length=60, nullable=false, unique=true)
      * @var string
      */
-    protected $nickname;
+    private $nickname;
 
     /**
      * @Doctrine\ORM\Mapping\Column(type="string", length=60, nullable=false, unique=true)
      * @var string
      */
-    protected $mail;
+    private $mail;
 
     /**
      * @Doctrine\ORM\Mapping\Column(type="array", nullable=false)
      * @var array
      */
-    protected $token;
+    private $token;
 
     public function __construct(string $nickname, string $mail, array $token)
     {

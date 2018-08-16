@@ -18,7 +18,7 @@ class Log implements \JsonSerializable
     private $id;
 
     /**
-     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="Job")
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="Job", inversedBy="logs")
      * @Doctrine\ORM\Mapping\JoinColumn(name="job_id", referencedColumnName="id", nullable=false)
      * @var \App\Entity\Job
      */

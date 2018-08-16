@@ -2,153 +2,50 @@
 
 {% block title %}Home{% endblock %}
 
+{% block projects_list %}
+    <h2>
+        {{ title }}
+        {% if own %}
+            <a href="{{ path('project.add') }}"><i class="fa fa-plus-circle "></i></a>
+        {% endif %}
+    </h2>
+    {% if projects is empty %}
+        <h4>You can create your own project <a href="{{ path('project.add') }}">here</a>!</h4>
+    {% else %}
+        <ul class="list-group list-group-flush">
+            {% for project in projects %}
+                <li class="list-group-item">
+                    <h4>
+                        <a href="{{ path('project', {'alias': project.alias}) }}">{{ project.name }}</a>
+                        {% if own %}
+                            <a href="{{ path('project.edit', {'id': project.id}) }}"><i class="fa fa-edit "></i></a>
+                        {% endif %}
+                        <br/>
+                        <small class="text-secondary">
+                            {% if project.jobs|length > 0 %}
+                                (active jobs: {{ project.jobs|length }})
+                            {% else %}
+                                (there's no jobs yet, <a href="{{ path('job.add') }}">add one</a>)
+                            {% endif %}
+                        </small>
+                    </h4>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     <div class="row">
-        <div class="col-md-12">
-            {% if data is empty %}
-                <h1 class="text-center">There's no logs yet, take a while and it will be here soon!</h1>
-            {% else %}
-                <ul class="nav">
-                    <li class="nav-item">
-                        <span class="nav-link disabled">Show logs for</span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{{ precise == 'hours' ? ' disabled' }}" href="{{ path(null, {}, {precise: 'hours'}) }}">Few hour</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{{ precise == 'day' ? ' disabled' }}" href="{{ path(null, {}, {precise: 'day'}) }}">Day</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{{ precise == 'week' ? ' disabled' }}" href="{{ path(null, {}, {precise: 'week'}) }}">Week</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{{ precise == 'month' ? ' disabled' }}" href="{{ path(null, {}, {precise: 'month'}) }}">Month</a>
-                    </li>
-                </ul>
-                <div class="card">
-                    {% for job in data %}
-                        <div class="card-header">
-                            {{ job.name }}
-                        </div>
-                        <div class="card-body">
-                            {% if job.logs is not empty %}
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <ul class="list-group list-group-flush" style="height: 100px; overflow: auto">
-                                            {% for log in job.logs %}
-                                                <li class="list-group-item">
-                                                    {% if log.up %}
-                                                        <i class="fas fa-thumbs-up"></i>
-                                                    {% else %}
-                                                        <i class="fas fa-thumbs-down"></i>
-                                                    {% endif %}
-                                                    {{ log.created|date("m/d/Y H:i:s") }}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                    {% if job.logs|length > 1 %}
-                                        <div class="col-md-3">
-                                            <div id="piechart-{{ job.id }}" class="chart chart-pie" style="height: 100px;"></div>
-                                            <script>
-                                                google.charts.load('current', {'packages': ['corechart']});
-                                                google.charts.setOnLoadCallback(drawPieChart);
-
-                                                function drawPieChart() {
-                                                    var data = google.visualization.arrayToDataTable([
-                                                        ['Foo', 'Bar'],
-                                                        ['Up',     {{ job.pie.up }}],
-                                                        ['Down', {{ job.pie.down }}]
-                                                    ]);
-                                                    var options = {
-                                                        is3D: true,
-                                                    };
-
-                                                    var chart = new google.visualization.PieChart(document.getElementById('piechart-{{ job.id }}'));
-
-                                                    chart.draw(data, options);
-                                                }
-                                            </script>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div id="linechart-{{ job.id }}"></div>
-                                            <script type="text/javascript">
-                                                // Load google charts
-                                                google.charts.load('current', {'packages': ['corechart', 'line']});
-                                                google.charts.setOnLoadCallback(drawChart);
-
-                                                // Draw the chart and set the chart values
-                                                function drawChart() {
-                                                    var data = new google.visualization.DataTable();
-                                                    data.addColumn('date', 'Time');
-                                                    data.addColumn('number', 'Status');
-                                                    {% for log in job.logs %}
-                                                    var created = {{ log.created }};
-                                                    var row = [new Date(created * 1000), {{ log.up|default(0) }}];
-                                                    data.addRow(row);
-                                                    {% endfor %}
-
-                                                    // Optional; add a title and set the width and height of the chart
-                                                    var min = new Date()
-                                                    switch ('{{ precise }}') {
-                                                        case 'hours':
-                                                            min.setTime(min.getTime() - 4 * 60 * 60 * 1000);
-                                                            break;
-                                                        case 'day':
-                                                            min.setTime(min.getTime() - 24 * 60 * 60 * 1000);
-                                                            break;
-                                                        case 'week':
-                                                            min.setTime(min.getTime() - 7 * 24 * 60 * 60 * 1000);
-                                                            break;
-                                                        default:
-                                                            min.setTime(min.getTime() - 4 * 7 * 24 * 60 * 60 * 1000);
-                                                    }
-                                                    var options = {
-                                                        'height': 100,
-                                                        legend: {position: 'none'},
-                                                        vAxis: {
-                                                            gridlines: {count: 1},
-                                                            label: 'none',
-                                                            viewWindow: {
-                                                                min: 0,
-                                                                max: 1,
-                                                            },
-                                                        },
-                                                        hAxis: {
-                                                            viewWindow: {
-                                                                min: min,
-                                                                max: new Date(),
-
-                                                            },
-                                                            gridlines: {
-                                                                count: -1,
-                                                                units: {
-                                                                    days: {format: ['MMM dd']},
-                                                                    hours: {format: ['HH:mm', 'ha']},
-                                                                }
-                                                            },
-                                                            minorGridlines: {
-                                                                units: {
-                                                                    hours: {format: ['hh:mm:ss a', 'ha']},
-                                                                    minutes: {format: ['HH:mm a Z', ':mm']}
-                                                                }
-                                                            }
-                                                        }
-                                                    };
-
-                                                    // Display the chart inside the <div> element with id="piechart"
-                                                    var chart = new google.visualization.LineChart(document.getElementById('linechart-{{ job.id }}'));
-                                                    chart.draw(data, options);
-                                                }
-                                            </script>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+        <div class="col-md-6">
+            {% with {title: 'Own projects', projects: own, own: true} %}
+                {{ block('projects_list') }}
+            {% endwith %}
+        </div>
+        <div class="col-md-6">
+            {% with {title: 'Public projects', projects: public, own: false} %}
+                {{ block('projects_list') }}
+            {% endwith %}
         </div>
     </div>
 {% endblock %}

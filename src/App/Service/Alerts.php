@@ -14,7 +14,7 @@ class Alerts implements AlertsInterface
     const DANGER = 'danger';
 
     /**
-     * @var array messages grouped by type.
+     * @var array messages projected by type.
      */
     protected $messages = [];
 

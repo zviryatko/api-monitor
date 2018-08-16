@@ -1,0 +1,19 @@
+{% extends '@layout/default.html.twig' %}
+
+{% block title %}{{ project.name }}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-center">{{ project.name }}</h1>
+
+            {% if project.jobs|length == 0 %}
+                <h4 class="text-center">There's no jobs in this project, but you can <a href="{{ path('job.add') }}">add one</a>!</h4>
+            {% elseif jobs is empty %}
+                <h4 class="text-center">There's no logs yet, take a while and it will be here soon!</h4>
+            {% else %}
+                {% include '@partial/logs.html.twig' with {jobs: jobs, precise: precise} %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

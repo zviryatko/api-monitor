@@ -15,6 +15,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
+                    <th scope="col">Project</th>
                     <th scope="col">Command</th>
                     <th scope="col">Actions</th>
                 </tr>
@@ -24,6 +25,7 @@
                     <tr>
                         <th scope="row">{{ job.id }}</th>
                         <td>{{ job.name }}</td>
+                        <td><a href="{{ path('project', {'alias': job.project.alias}) }}">{{ job.project.name }}</a></td>
                         <td><code>{{ job.command|truncate(50) }}</code></td>
                         <td><a href="{{ path('job.edit', {'id': job.id}) }}">Edit</a></td>
                     </tr>
