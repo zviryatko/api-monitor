@@ -8,7 +8,7 @@ use App\Entity\Job;
 use App\Entity\Log;
 use App\Entity\Project;
 use App\Form\Validator\CsrfGuard;
-use Doctrine\ORM\Query\Expr\Join;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -16,7 +16,6 @@ use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\RedirectResponse;
 use Zend\Expressive\Csrf\CsrfGuardInterface;
 use Zend\Expressive\Csrf\CsrfMiddleware;
-use Zend\Expressive\Session\SessionMiddleware;
 use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Form\Element\Hidden;
 use Zend\Form\Element\Submit;
@@ -54,6 +53,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
                 $this->storage->flush();
                 return new RedirectResponse($this->router->generateUri('job.list'));
             } elseif ($form->isValid()) {
+                /** @var Job $job */
                 $job = $form->getObject();
                 $this->storage->persist($job);
                 $this->storage->flush();
@@ -80,7 +80,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
     private function getForm(Job $job, CsrfGuardInterface $guard): FormInterface
     {
         $form = (new AnnotationBuilder())->createForm(Job::class);
-        $form->setHydrator(new \Zend\Hydrator\Reflection);
+        $form->setHydrator(new DoctrineObject($this->storage, false));
         $form->bind($job);
         $form->add(new Hidden('_csrf'));
         if ($job->getId()) {
@@ -89,20 +89,21 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
         } else {
             $form->add(new Submit('op', ['value' => 'add']));
         }
-        $form->getInputFilter()->add([
+        $form->getInputFilter()
+            ->add([
             'name' => 'name',
             'required' => true,
-        ]);
-        $form->getInputFilter()->add([
+        ])
+            ->add([
             'name' => 'command',
             'required' => true,
-        ]);
-        $form->getInputFilter()->add([
+        ])
+            ->add([
             'name' => '_csrf',
             'required' => true,
             'validators' => [new CsrfGuard($guard)],
-        ]);
-        $form->getInputFilter()->add([
+        ])
+            ->add([
             'name' => 'op',
             'required' => true,
             'validators' => [
@@ -113,7 +114,18 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
                     ],
                 ]),
             ],
-        ]);
+        ])
+            ->add([
+                'name' => 'project',
+                'required' => true,
+                'validators' => [
+                    new \DoctrineModule\Validator\ObjectExists([
+                        'object_repository' => $this->storage->getRepository(Project::class),
+                        'fields' => ['id'],
+                    ]),
+                ],
+            ])
+        ;
         return $form;
     }
 

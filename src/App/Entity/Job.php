@@ -82,7 +82,7 @@ class Job implements \JsonSerializable
         return [
             'id' => $this->id,
             'profile' => $this->profile->jsonSerialize(),
-            'project' => $this->getProject()->jsonSerialize(),
+            'project' => $this->project->jsonSerialize(),
             'name' => $this->name,
             'command' => $this->command,
         ];
