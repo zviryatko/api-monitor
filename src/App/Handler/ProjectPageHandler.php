@@ -56,13 +56,14 @@ class ProjectPageHandler extends BasePageHandler implements RequestHandlerInterf
 
     private function getLogs(Project $project, \DateTime $time): array
     {
-
         $query = $this->storage->createQueryBuilder()
             ->select('log')
             ->from(Log::class, 'log')
             ->join(Job::class, 'job', Join::WITH, 'log.job = job.id')
             ->where('job.project = :project')
             ->setParameter('project', $project->getId())
+            ->andWhere('log.created > :time')
+            ->setParameter('time', $time->getTimestamp())
             ->orderBy('log.created', 'DESC')
             ->getQuery();
         $logs = $query->execute();
@@ -80,6 +81,7 @@ class ProjectPageHandler extends BasePageHandler implements RequestHandlerInterf
                 $data[$job]['pie']['down']++;
             }
         }
+        ksort($data, SORT_DESC | SORT_NUMERIC);
         return $data;
     }
 }
