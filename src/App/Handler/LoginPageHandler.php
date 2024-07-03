@@ -56,10 +56,17 @@ class LoginPageHandler extends BasePageHandler implements RequestHandlerInterfac
     protected function createProfileIfNotExists(string $email, string $nickname, array $token): Profile
     {
         $repo = $this->storage->getRepository(Profile::class);
+        /** @var Profile $profile */
         $profile = $repo->findOneBy(['mail' => $email]);
         if (!$profile) {
             $profile = new Profile($nickname, $email, $token);
             $this->storage->persist($profile);
+            $this->storage->flush();
+        }
+        else {
+            // Update data on login.
+            $profile->setNickname($nickname);
+            $profile->setToken($token);
             $this->storage->flush();
         }
         return $profile;

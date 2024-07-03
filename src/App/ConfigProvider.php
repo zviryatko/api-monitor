@@ -41,9 +41,9 @@ class ConfigProvider
         return [
             'invokables' => [
                 Service\AlertsInterface::class => Service\Alerts::class,
-                Twig\Extensions\AuthenticationHelper::class => Twig\Extensions\AuthenticationHelper::class,
             ],
             'factories' => [
+                Twig\Extensions\AuthenticationHelper::class => Twig\Extensions\AuthenticationHelperFactory::class,
                 Handler\HomePageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\JobListHandler::class => Handler\PageHandlerFactory::class,
                 Handler\JobFormHandler::class => Handler\PageHandlerFactory::class,
@@ -52,7 +52,6 @@ class ConfigProvider
                 Handler\ProjectFormHandler::class => Handler\PageHandlerFactory::class,
                 Handler\LogoutPageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\LoginPageHandler::class => Handler\LoginPageHandlerFactory::class,
-                Handler\RegisterPageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\StaticPageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\UserPageHandler::class => Handler\PageHandlerFactory::class,
                 Command\JobLog::class => Command\CommandFactory::class,

@@ -35,7 +35,7 @@ class JobList extends CommandBase
                 return [
                     $job->getId(),
                     $job->getName(),
-                    strlen($job->getCommand()) > 50 ? substr($job->getCommand(), 0, 50) . '...' : $job->getCommand(),
+                    strlen($job->getUrl()) > 50 ? substr($job->getUrl(), 0, 50) . '...' : $job->getUrl(),
                 ];
             }, $jobs));
         $table->render();

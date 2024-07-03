@@ -75,4 +75,14 @@ class Profile implements \JsonSerializable
     {
         return $this->token;
     }
+
+    public function setNickname(string $nickname): void
+    {
+        $this->nickname = $nickname;
+    }
+
+    public function setToken(array $token): void
+    {
+        $this->token = $token;
+    }
 }

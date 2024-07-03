@@ -9,12 +9,10 @@ use App\Entity\Log;
 use App\Entity\Project;
 use App\Form\Validator\CsrfGuard;
 use Doctrine\Laminas\Hydrator\DoctrineObject;
-use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
-use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator;
+use DoctrineModule\Validator\ObjectExists;
 use DoctrineORMModule\Form\Annotation\EntityBasedFormBuilder;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Hydrator\Aggregate\AggregateHydrator;
-use Laminas\Hydrator\ObjectPropertyHydrator;
 use Laminas\Hydrator\ReflectionHydrator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -74,7 +72,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
             'job' => [
                 'id' => $job->getId(),
                 'name' => $input['name'] ?? $job->getName(),
-                'command' => $input['command'] ?? $job->getCommand(),
+                'url' => $input['url'] ?? $job->getUrl(),
                 'project' => $input['project'] ?? $job->getProject()->getId(),
             ],
             'projects' => $projects,
@@ -90,8 +88,6 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
         $hydrator = new AggregateHydrator();
         $hydrator->add(new ReflectionHydrator(), 2);
         $hydrator->add(new DoctrineObject($this->storage), 1);
-//        $form->setHydrator(new DoctrineObject($this->storage));
-//        $form->setHydrator(new ReflectionHydrator);
         $form->setHydrator($hydrator);
         $form->bind($job);
         $form->add(new Hidden('_csrf'));
@@ -109,7 +105,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
                 'required' => true,
             ])
             ->add([
-                'name' => 'command',
+                'name' => 'url',
                 'required' => true,
             ])
             ->add([
@@ -133,7 +129,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
                 'name' => 'project',
                 'required' => true,
                 'validators' => [
-                    new \DoctrineModule\Validator\ObjectExists([
+                    new ObjectExists([
                         'object_repository' => $this->storage->getRepository(Project::class),
                         'fields' => ['id'],
                     ]),
@@ -175,7 +171,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
     }
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @return Project[]
      */
     private function getAvailableProjects(ServerRequestInterface $request): array

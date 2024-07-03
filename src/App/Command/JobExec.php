@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Job;
+use App\Service\JobExecute;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,10 +35,11 @@ class JobExec extends CommandBase
     {
         $name_or_id = $input->getArgument('name_or_id');
         $prop = is_numeric($name_or_id) ? 'id' : 'name';
+        $jobExecute = new JobExecute();
         $job = $this->storage->getRepository(Job::class)->findOneBy([$prop => $name_or_id]);
         if ($job instanceof Job) {
             $output->writeln(
-                sprintf($job->execute() ? '<info>Job run success.</info>' : '<error>Job run error.</error>')
+                sprintf($jobExecute->execute($job) ? '<info>Job run success.</info>' : '<error>Job run error.</error>')
             );
             return Command::SUCCESS;
         } else {

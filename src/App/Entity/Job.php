@@ -30,11 +30,11 @@ class Job implements \JsonSerializable
     #[Form\Type("Laminas\Form\Element\Text")]
     #[Form\Options(["label" => "Job name:", "class" => "form-control"])]
     private $name;
-
-    #[ORM\Column(name: "command", type: "text", nullable: false)]
-    #[Form\Type("Laminas\Form\Element\Textarea")]
-    #[Form\Options(["label" => "The command's project:", "class" => "form-control"])]
-    private $command;
+    
+    #[ORM\Column(name: "url", type: "string", length: 255, nullable: true)]
+    #[Form\Type("Laminas\Form\Element\Text")]
+    #[Form\Options(["label" => "The url to test:", "class" => "form-control"])]
+    private $url;
 
     #[ORM\OneToMany(targetEntity: Log::class, mappedBy: "job")]
     private $logs;
@@ -45,14 +45,14 @@ class Job implements \JsonSerializable
      * @param string $name
      * @param Profile $profile
      * @param Project $project
-     * @param string $command
+     * @param string $url
      */
-    public function __construct(string $name, Profile $profile, Project $project, string $command)
+    public function __construct(string $name, Profile $profile, Project $project, string $url)
     {
         $this->name = $name;
         $this->profile = $profile;
         $this->project = $project;
-        $this->command = $command;
+        $this->url = $url;
         $this->logs = new ArrayCollection();
     }
 
@@ -63,7 +63,7 @@ class Job implements \JsonSerializable
             'profile' => $this->profile->jsonSerialize(),
             'project' => $this->project->jsonSerialize(),
             'name' => $this->name,
-            'command' => $this->command,
+            'url' => $this->url,
         ];
     }
 
@@ -86,21 +86,9 @@ class Job implements \JsonSerializable
     /**
      * @return string
      */
-    public function getCommand(): string
+    public function getUrl(): string
     {
-        return $this->command;
-    }
-
-    /**
-     * Execute job.
-     *
-     * @return bool
-     */
-    public function execute()
-    {
-        $process = new Process([$this->getCommand()]);
-        $process->run();
-        return $process->isSuccessful();
+        return $this->url;
     }
 
     /**

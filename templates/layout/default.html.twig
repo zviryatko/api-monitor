@@ -64,7 +64,7 @@
                 </a>
             </div>
             <!-- Links -->
-            {% if is_authorized(request) %}
+            {% if is_authorized() %}
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
@@ -88,12 +88,15 @@
 
 
             <ul class="navbar-nav justify-content-end">
-                {% if is_authorized(request) %}
+                {% if is_authorized() %}
                     <li class="nav-item">
-                        <span class="nav-link"><i class="fa fa-user-circle"></i> Hello, {{ username(request) }}</span>
+                        <span class="nav-link">
+                            Hello, {{ username() }}
+                            <img alt="{{ username() }}" height="24px" style="border-radius: 24px" src="{{ picture() }}" />
+                        </span>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ path('user.logout', {token: csrf(request)}) }}" class="nav-link">
+                        <a href="{{ path('user.logout', {token: csrf()}) }}" class="nav-link">
                             <i class="fa fa-user-secret"></i> Logout
                         </a>
                     </li>

@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Job;
 use App\Entity\Log;
+use App\Service\JobExecute;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,10 +33,11 @@ class MonitorRunAll extends CommandBase
         /** @var Job[] $jobs */
         $jobs = $repo->findAll();
         $storage = $this->storage;
+        $jobExecute = new JobExecute();
         $table = (new Table($output))
             ->setHeaders(['Name', 'Status']);
         foreach ($jobs as $job) {
-            $status = $job->execute();
+            $status = $jobExecute->execute($job);
             $storage->persist(new Log($job, $status));
             $table->addRow([$job->getName(), (int)$status]);
         }

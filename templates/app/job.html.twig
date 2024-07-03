@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-md-12">
             {% for field, messages in errors %}
-                {% if field not in ['name', 'project', 'command'] %}
+                {% if field not in ['name', 'project', 'url'] %}
                     {% for error in messages %}
                         <div class="alert alert-danger" role="alert">{{ error }}</div>
                     {% endfor %}
@@ -50,16 +50,16 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    <label for="command">Command</label>
-                    <textarea name="command" id="command" cols="30" rows="1"
-                              class="form-control{% if errors.command is defined %} is-invalid{% elseif submitted %} is-valid{% endif %}"
-                              placeholder="test $(curl -s --write-out %{http_code} --output /dev/null) -eq 200 && echo 1"
-                    >{{ job.command|escape('html') }}</textarea>
-                    <small id="commandHelp" class="form-text text-muted">Service command, it should be bash script with
-                        return 1 for success and 0 for fail, example: <code>test $(curl -s --write-out %{http_code}
-                            --output /dev/null) -eq 200 && echo 1</code></small>
-                    {% if errors.command is defined %}
-                        {% for error in errors.command %}
+                    <label for="url">Url</label>
+                    <textarea name="url" id="url" cols="30" rows="1"
+                              class="form-control{% if errors.url is defined %} is-invalid{% elseif submitted %} is-valid{% endif %}"
+                              placeholder="https://example.com:8080/api/v1/test"
+                    >{{ job.url|escape('html') }}</textarea>
+                    <small id="urlHelp" class="form-text text-muted">
+                        Url to your service, like <code>https://example.com:8080/api/v1/test</code>.
+                    </small>
+                    {% if errors.url is defined %}
+                        {% for error in errors.url %}
                             <div class="alert alert-danger" role="alert">{{ error }}</div>
                         {% endfor %}
                     {% endif %}

@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Job;
 use App\Entity\Log;
+use App\Service\JobExecute;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,8 +38,9 @@ class JobLog extends CommandBase
         $name_or_id = $input->getArgument('name_or_id');
         $prop = is_numeric($name_or_id) ? 'id' : 'name';
         $job = $this->storage->getRepository(Job::class)->findOneBy([$prop => $name_or_id]);
+        $jobExecute = new JobExecute();
         if ($job instanceof Job) {
-            $log = new Log($job, $job->execute());
+            $log = new Log($job, $jobExecute->execute($job));
             $this->storage->persist($log);
             $this->storage->flush();
             $output->writeln(sprintf('<info>Added log "%s", %s</info>', $job->getName(), $log->getCreated()
