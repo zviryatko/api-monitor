@@ -1,5 +1,5 @@
 <?php
 
-use Zend\Form\ConfigProvider;
+use Laminas\Form\ConfigProvider;
 
 return (new ConfigProvider())->__invoke();

@@ -10,8 +10,10 @@ use App\Service\Alerts;
 use App\Service\AlertsInterface;
 use App\Service\FormAlertInterface;
 use Interop\Container\ContainerInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class ElementError extends \Twig_Extension
+class ElementError extends AbstractExtension
 {
     /**
      * @var \App\Service\AlertsInterface
@@ -42,7 +44,7 @@ class ElementError extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('element_error_class', [$this, 'elementErrorClass']),
+            new TwigFunction('element_error_class', [$this, 'elementErrorClass']),
         ];
     }
 

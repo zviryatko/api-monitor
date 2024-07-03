@@ -5,8 +5,8 @@ namespace App\Handler;
 
 use App\Service\AlertsInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Zend\Expressive\Router;
-use Zend\Expressive\Template;
+use Mezzio\Router;
+use Mezzio\Template;
 
 abstract class BasePageHandler
 {

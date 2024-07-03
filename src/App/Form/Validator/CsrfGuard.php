@@ -6,8 +6,8 @@
 
 namespace App\Form\Validator;
 
-use Zend\Expressive\Csrf\CsrfGuardInterface;
-use Zend\Validator\AbstractValidator;
+use Mezzio\Csrf\CsrfGuardInterface;
+use Laminas\Validator\AbstractValidator;
 
 class CsrfGuard extends AbstractValidator
 {
@@ -26,7 +26,7 @@ class CsrfGuard extends AbstractValidator
     ];
 
     /**
-     * @var \Zend\Expressive\Csrf\CsrfGuardInterface
+     * @var \Mezzio\Csrf\CsrfGuardInterface
      */
     private $guard;
 
@@ -45,7 +45,7 @@ class CsrfGuard extends AbstractValidator
      *
      * @param  mixed $value
      * @return bool
-     * @throws \Zend\Validator\Exception If validation of $value is impossible
+     * @throws \Laminas\Validator\Exception If validation of $value is impossible
      */
     public function isValid($value)
     {

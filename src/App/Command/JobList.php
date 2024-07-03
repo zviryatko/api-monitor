@@ -3,12 +3,14 @@
 namespace App\Command;
 
 use App\Entity\Job;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class JobList extends CommandBase
 {
+    public const NAME = 'job:list';
 
     /**
      * Configures the command
@@ -16,14 +18,14 @@ class JobList extends CommandBase
     protected function configure()
     {
         $this
-            ->setName('job:list')
+            ->setName(self::NAME)
             ->setDescription('List of jobs');
     }
 
     /**
      * Executes the current command
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var Job[] $jobs */
         $jobs = $this->storage->getRepository(Job::class)->findAll();
@@ -37,5 +39,6 @@ class JobList extends CommandBase
                 ];
             }, $jobs));
         $table->render();
+        return Command::SUCCESS;
     }
 }

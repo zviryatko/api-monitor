@@ -17,13 +17,13 @@ return [
         // class name.
         'invokables' => [
             // Fully\Qualified\InterfaceName::class => Fully\Qualified\ClassName::class,
-            \Zend\Expressive\Helper\ServerUrlHelper::class => Zend\Expressive\Helper\ServerUrlHelper::class,
+            \Mezzio\Helper\ServerUrlHelper::class => Mezzio\Helper\ServerUrlHelper::class,
         ],
         // Use 'factories' for services provided by callbacks/factory classes.
         'factories' => [
-            // Fully\Qualified\ClassName::class => Fully\Qualified\FactoryName::class,
-            \Doctrine\ORM\EntityManager::class => \ContainerInteropDoctrine\EntityManagerFactory::class,
-            \Zend\Expressive\Helper\UrlHelper::class => \Zend\Expressive\Helper\UrlHelperFactory::class,
+            \Doctrine\ORM\EntityManager::class => \App\Container\DoctrineFactory::class,
+            \Mezzio\Helper\UrlHelper::class => \Mezzio\Helper\UrlHelperFactory::class,
+            \Doctrine\Common\Cache\Cache::class => \Doctrine\ORM\Cache\CacheFactory::class,
         ],
     ],
 ];

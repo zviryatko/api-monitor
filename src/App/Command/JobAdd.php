@@ -5,12 +5,14 @@ namespace App\Command;
 use App\Entity\Job;
 use App\Entity\Profile;
 use App\Entity\Project;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class JobAdd extends CommandBase
 {
+    public const NAME = 'job:add';
 
     /**
      * Configures the command
@@ -18,7 +20,7 @@ class JobAdd extends CommandBase
     protected function configure()
     {
         $this
-            ->setName('job:add')
+            ->setName(self::NAME)
             ->setDescription('Add job')
             ->addArgument(
                 'profile',
@@ -40,14 +42,14 @@ class JobAdd extends CommandBase
     /**
      * Executes the current command
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $profileNameOrId = $input->getArgument('profile');
         $prop = is_numeric($profileNameOrId) ? 'id' : 'mail';
         $profile = $this->storage->getRepository(Profile::class)->findOneBy([$prop => $profileNameOrId]);
         if (!$profile instanceof Profile) {
             $output->writeln(sprintf('<error>Profile with %s "%s" is not found.</error>', $prop, $profileNameOrId));
-            return;
+            return Command::FAILURE;
         }
         $name = $input->getArgument('name');
         $command = $input->getArgument('exec');
@@ -56,6 +58,7 @@ class JobAdd extends CommandBase
         $this->storage->persist($job);
         $this->storage->flush();
         $output->writeln(sprintf('<info>Job added: "%s"</info>', $job->getName()));
+        return Command::SUCCESS;
     }
 
 

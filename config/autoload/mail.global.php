@@ -3,7 +3,7 @@
 return [
     'dependencies' => [
         'factories' => [
-            Zend\Mail\Transport\TransportInterface::class => App\Container\MailTransportFactory::class,
+            Laminas\Mail\Transport\TransportInterface::class => App\Container\MailTransportFactory::class,
         ],
     ],
 ];

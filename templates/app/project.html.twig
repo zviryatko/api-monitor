@@ -24,7 +24,7 @@
                     <input type="text"
                            class="form-control{% if errors.name is defined %} is-invalid{% elseif submitted %} is-valid{% endif %}"
                            id="name" name="name" aria-describedby="nameHelp" placeholder="My New Cool Project"
-                           value="{{ project.name|escape('html_attr') }}">
+                           maxlength="32" value="{{ project.name|escape('html_attr') }}">
                     <small id="nameHelp" class="form-text text-muted">Project name like <code>My New Cool Project</code>.
                     </small>
                     {% if errors.name is defined %}
@@ -38,7 +38,7 @@
                     <input type="text"
                            class="form-control{% if errors.alias is defined %} is-invalid{% elseif submitted %} is-valid{% endif %}"
                            name="alias" id="alias" aria-describedby="aliasHelp" placeholder="my-new-cool-project"
-                           value="{{ project.alias|escape('html_attr') }}"/>
+                           maxlength="32" value="{{ project.alias|escape('html_attr') }}"/>
                     <small id="aliasHelp" class="form-text text-muted">Project path alias that will be public accessible
                         like <code>my-new-cool-project</code>.
                     </small>

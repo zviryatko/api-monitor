@@ -13,9 +13,9 @@ use App\Service\FormAlert;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\HtmlResponse;
-use Zend\Diactoros\Response\RedirectResponse;
-use Zend\Mail\Exception\ExceptionInterface;
+use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\RedirectResponse;
+use Laminas\Mail\Exception\ExceptionInterface;
 
 class RegisterPageHandler extends BasePageHandler implements RequestHandlerInterface
 {

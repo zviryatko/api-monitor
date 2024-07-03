@@ -10,7 +10,7 @@ namespace App\Handler;
 use App\Entity\Profile;
 use App\Helper\AuthenticationMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Expressive\Session\SessionMiddleware;
+use Mezzio\Session\SessionMiddleware;
 
 trait AuthorizationTrait
 {
@@ -22,14 +22,14 @@ trait AuthorizationTrait
 
     protected function authorize(ServerRequestInterface $request, Profile $profile): void
     {
-        /** @var \Zend\Expressive\Session\SessionInterface $session */
+        /** @var \Mezzio\Session\SessionInterface $session */
         $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
         $session->set(AuthenticationMiddleware::USER_ID_SESSION_KEY, $profile->id());
     }
 
     protected function forget(ServerRequestInterface $request): void
     {
-        /** @var \Zend\Expressive\Session\SessionInterface $session */
+        /** @var \Mezzio\Session\SessionInterface $session */
         $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
         $session->clear();
     }

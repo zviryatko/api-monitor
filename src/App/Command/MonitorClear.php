@@ -9,9 +9,9 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MonitorRunAll extends CommandBase
+class MonitorClear extends CommandBase
 {
-    public const NAME = 'monitor:all';
+    public const NAME = 'monitor:clear';
 
     /**
      * Configures the command
@@ -20,7 +20,7 @@ class MonitorRunAll extends CommandBase
     {
         $this
             ->setName(self::NAME)
-            ->setDescription('Run all jobs');
+            ->setDescription('Remove logs older than 30 days');
     }
 
     /**
@@ -28,20 +28,13 @@ class MonitorRunAll extends CommandBase
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $repo = $this->storage->getRepository(Job::class);
-        /** @var Job[] $jobs */
-        $jobs = $repo->findAll();
         $storage = $this->storage;
-        $table = (new Table($output))
-            ->setHeaders(['Name', 'Status']);
-        foreach ($jobs as $job) {
-            $status = $job->execute();
-            $storage->persist(new Log($job, $status));
-            $table->addRow([$job->getName(), (int)$status]);
-        }
-
-        $table->render();
-        $this->storage->flush();
+        $storage->createQueryBuilder()
+            ->delete(Log::class, 'l')
+            ->andWhere('l.created < :date')
+            ->setParameter('date', new \DateTime('-30 days'))
+            ->getQuery()
+            ->execute();
         return Command::SUCCESS;
     }
 }

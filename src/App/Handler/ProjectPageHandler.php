@@ -11,7 +11,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\HtmlResponse;
 
 class ProjectPageHandler extends BasePageHandler implements RequestHandlerInterface
 {

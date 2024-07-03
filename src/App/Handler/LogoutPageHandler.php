@@ -9,8 +9,8 @@ namespace App\Handler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\RedirectResponse;
-use Zend\Expressive\Csrf\CsrfMiddleware;
+use Laminas\Diactoros\Response\RedirectResponse;
+use Mezzio\Csrf\CsrfMiddleware;
 
 class LogoutPageHandler extends BasePageHandler implements RequestHandlerInterface
 {
@@ -19,7 +19,7 @@ class LogoutPageHandler extends BasePageHandler implements RequestHandlerInterfa
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        /** @var \Zend\Expressive\Csrf\CsrfGuardInterface $guard */
+        /** @var \Mezzio\Csrf\CsrfGuardInterface $guard */
         $guard = $request->getAttribute(CsrfMiddleware::GUARD_ATTRIBUTE);
         if ($guard->validateToken($request->getAttribute('token'))) {
             $this->forget($request);

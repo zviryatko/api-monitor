@@ -8,8 +8,8 @@ namespace App\Helper;
 
 use App\Service\AlertsInterface;
 use Interop\Container\ContainerInterface;
-use Zend\Expressive\Template\TemplateRendererInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Mezzio\Template\TemplateRendererInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class TemplateHelperMiddlewareFactory implements FactoryInterface
 {

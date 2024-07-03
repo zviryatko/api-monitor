@@ -9,10 +9,12 @@ namespace App\Twig\Extensions;
 use App\Entity\Profile;
 use App\Helper\AuthenticationMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Expressive\Csrf\CsrfMiddleware;
-use Zend\Expressive\Session\SessionMiddleware;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
+use Mezzio\Csrf\CsrfMiddleware;
+use Mezzio\Session\SessionMiddleware;
 
-class AuthenticationHelper extends \Twig_Extension
+class AuthenticationHelper extends AbstractExtension
 {
 
     /**
@@ -31,9 +33,9 @@ class AuthenticationHelper extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('is_authorized', [$this, 'isAuthorized']),
-            new \Twig_SimpleFunction('username', [$this, 'username']),
-            new \Twig_SimpleFunction('csrf', [$this, 'csrf']),
+            new TwigFunction('is_authorized', [$this, 'isAuthorized']),
+            new TwigFunction('username', [$this, 'username']),
+            new TwigFunction('csrf', [$this, 'csrf']),
         ];
     }
 
@@ -54,12 +56,12 @@ class AuthenticationHelper extends \Twig_Extension
 
     public function csrf(ServerRequestInterface $request): string
     {
-        /** @var \Zend\Expressive\Session\SessionInterface $session */
+        /** @var \Mezzio\Session\SessionInterface $session */
         $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
         if ($session->has('__csrf')) {
             return $session->get('__csrf');
         }
-        /** @var \Zend\Expressive\Csrf\CsrfGuardInterface $guard */
+        /** @var \Mezzio\Csrf\CsrfGuardInterface $guard */
         $guard = $request->getAttribute(CsrfMiddleware::GUARD_ATTRIBUTE);
         return $guard->generateToken();
     }

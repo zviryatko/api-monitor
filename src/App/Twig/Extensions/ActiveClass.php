@@ -7,13 +7,16 @@
 namespace App\Twig\Extensions;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Expressive\Router\RouterInterface;
-use Zend\ServiceManager\ServiceManager;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
+use Mezzio\Router\RouterInterface;
+use Laminas\ServiceManager\ServiceManager;
 
-class ActiveClass extends \Twig_Extension
+class ActiveClass extends AbstractExtension
 {
     /**
-     * @var \Zend\Expressive\Router\RouterInterface
+     * @var \Mezzio\Router\RouterInterface
      */
     protected $router;
 
@@ -41,11 +44,26 @@ class ActiveClass extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('active_class', [$this, 'activeClass']),
+            new TwigFunction('active_class', [$this, 'activeClass']),
         ];
     }
 
-    public function activeClass(ServerRequestInterface $request, $path, $class = ' active')
+    public function getFilters()
+    {
+        return [
+            new TwigFilter('truncate', [$this, 'truncate']),
+        ];
+    }
+
+    public function truncate(string $text, int $length = 100, string $ending = '...'): string
+    {
+        if (strlen($text) > $length) {
+            $text = substr($text, 0, $length - strlen($ending)) . $ending;
+        }
+        return $text;
+    }
+
+    public function activeClass(ServerRequestInterface $request, $path, $class = ' active'): string
     {
         $route = $this->router->match($request);
         return $route->getMatchedRouteName() === (string) $path ? $class : '';

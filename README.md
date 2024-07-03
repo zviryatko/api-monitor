@@ -7,4 +7,7 @@ First create database schema:
 Then add few commands
 And finally add crontab
 
-`*/5 * * * * php /path/to/api-monitor/bin/console.php monitor:all`
+```cronexp
+*/5 * * * * /path/to/api-monitor/vendor/bin/laminas monitor:all
+0 0 * * * /path/to/api-monitor/vendor/bin/laminas monitor:clear
+```

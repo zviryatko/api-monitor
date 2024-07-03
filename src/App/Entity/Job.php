@@ -5,59 +5,38 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Process\Process;
+use Doctrine\ORM\Mapping as ORM;
+use Laminas\Form\Annotation as Form;
 
-/**
- * @Doctrine\ORM\Mapping\Entity
- * @Doctrine\ORM\Mapping\Table(name="job")
- * @Zend\Form\Annotation\Name("job")
- */
+#[ORM\Entity]
+#[ORM\Table(name: "job")]
+#[Form\Name("job")]
 class Job implements \JsonSerializable
 {
-
-    /**
-     * @Doctrine\ORM\Mapping\Id
-     * @Doctrine\ORM\Mapping\Column(name="id", type="integer")
-     * @Doctrine\ORM\Mapping\GeneratedValue(strategy="IDENTITY")
-     * @var int
-     */
+    #[ORM\Id]
+    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
 
-    /**
-     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="Profile")
-     * @Doctrine\ORM\Mapping\JoinColumn(name="profile", referencedColumnName="id", nullable=false)
-     * @var Profile
-     */
+    #[ORM\ManyToOne(targetEntity: Profile::class)]
+    #[ORM\JoinColumn(name: "profile", referencedColumnName: "id", nullable: false)]
     private $profile;
 
-    /**
-     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="Project", inversedBy="jobs")
-     * @Doctrine\ORM\Mapping\JoinColumn(name="project", referencedColumnName="id", nullable=false)
-     * @var Project
-     */
+    #[ORM\ManyToOne(targetEntity: Project::class, inversedBy: "jobs")]
+    #[ORM\JoinColumn(name: "project", referencedColumnName: "id", nullable: false)]
     private $project;
 
-    /**
-     * @Doctrine\ORM\Mapping\Column(name="name", type="string", length=32, nullable=false)
-     * @Zend\Form\Annotation\Type("Zend\Form\Element\Text")
-     * @Zend\Form\Annotation\Options({"label":"Job name:", "class": "form-control"})
-     * @var string
-     */
+    #[ORM\Column(name: "name", type: "string", length: 32, nullable: false)]
+    #[Form\Type("Laminas\Form\Element\Text")]
+    #[Form\Options(["label" => "Job name:", "class" => "form-control"])]
     private $name;
 
-    /**
-     * @Doctrine\ORM\Mapping\Column(name="command", type="text", nullable=false)
-     * @Zend\Form\Annotation\Type("Zend\Form\Element\Textarea")
-     * @Zend\Form\Annotation\Options({"label":"The command's project:", "class": "form-control"})
-     * @var string
-     */
+    #[ORM\Column(name: "command", type: "text", nullable: false)]
+    #[Form\Type("Laminas\Form\Element\Textarea")]
+    #[Form\Options(["label" => "The command's project:", "class" => "form-control"])]
     private $command;
 
-    /**
-     * Bidirectional - One-To-Many (INVERSE SIDE)
-     *
-     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="Log", mappedBy="job")
-     * @var Collection
-     */
+    #[ORM\OneToMany(targetEntity: Log::class, mappedBy: "job")]
     private $logs;
 
     /**
@@ -77,7 +56,7 @@ class Job implements \JsonSerializable
         $this->logs = new ArrayCollection();
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return [
             'id' => $this->id,
@@ -119,7 +98,7 @@ class Job implements \JsonSerializable
      */
     public function execute()
     {
-        $process = new Process($this->getCommand());
+        $process = new Process([$this->getCommand()]);
         $process->run();
         return $process->isSuccessful();
     }
@@ -146,5 +125,10 @@ class Job implements \JsonSerializable
     public function getLogs(): Collection
     {
         return $this->logs;
+    }
+
+    public function setProject(Project $project): void
+    {
+        $this->project = $project;
     }
 }

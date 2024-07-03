@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Service\GoogleClientFactory;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 
 /**
  * The configuration provider for the App module
@@ -25,7 +26,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => $this->getDependencies(),
-            'console' => $this->getConsole(),
+            'laminas-cli' => $this->getConsole(),
             'templates' => $this->getTemplates(),
             'doctrine' => $this->getDoctrine(),
             'twig' => $this->getTwig(),
@@ -54,18 +55,19 @@ class ConfigProvider
                 Handler\RegisterPageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\StaticPageHandler::class => Handler\PageHandlerFactory::class,
                 Handler\UserPageHandler::class => Handler\PageHandlerFactory::class,
-                Command\Monitor::class => Command\CommandFactory::class,
+                Command\JobLog::class => Command\CommandFactory::class,
                 Command\JobAdd::class => Command\CommandFactory::class,
                 Command\JobRemove::class => Command\CommandFactory::class,
                 Command\JobExec::class => Command\CommandFactory::class,
                 Command\JobList::class => Command\CommandFactory::class,
                 Command\MonitorRunAll::class => Command\CommandFactory::class,
+                Command\MonitorClear::class => Command\CommandFactory::class,
                 Helper\TemplateHelperMiddleware::class => Helper\TemplateHelperMiddlewareFactory::class,
                 Helper\AuthenticationMiddleware::class => [Helper\AuthenticationMiddleware::class, 'factory'],
                 Twig\Extensions\ActiveClass::class => [Twig\Extensions\ActiveClass::class, 'factory'],
                 Twig\Extensions\ElementError::class => [Twig\Extensions\ElementError::class, 'factory'],
-                \Zend\Mail\Transport\TransportInterface::class => Container\MailTransportFactory::class,
-                \Google_Client::class => GoogleClientFactory::class
+                \Laminas\Mail\Transport\TransportInterface::class => Container\MailTransportFactory::class,
+                \Auth0\SDK\Auth0::class => \App\Service\Auth0ClientFactory::class,
             ],
         ];
     }
@@ -74,12 +76,13 @@ class ConfigProvider
     {
         return [
             'commands' => [
-                Command\Monitor::class,
-                Command\MonitorRunAll::class,
-                Command\JobAdd::class,
-                Command\JobRemove::class,
-                Command\JobExec::class,
-                Command\JobList::class,
+                Command\JobLog::NAME => Command\JobLog::class,
+                Command\MonitorRunAll::NAME => Command\MonitorRunAll::class,
+                Command\JobAdd::NAME => Command\JobAdd::class,
+                Command\JobRemove::NAME => Command\JobRemove::class,
+                Command\JobExec::NAME => Command\JobExec::class,
+                Command\JobList::NAME => Command\JobList::class,
+                Command\MonitorClear::NAME => Command\MonitorClear::class,
             ],
         ];
     }
@@ -104,13 +107,13 @@ class ConfigProvider
         return [
             'driver' => [
                 'orm_default' => [
-                    'class' => \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain::class,
+                    'class' => MappingDriverChain::class,
                     'drivers' => [
                         'App\Entity' => 'app_entity',
                     ],
                 ],
                 'app_entity' => [
-                    'class' => \Doctrine\ORM\Mapping\Driver\AnnotationDriver::class,
+                    'class' => AttributeDriver::class,
                     'cache' => 'array',
                     'paths' => __DIR__ . '/Entity',
                 ],

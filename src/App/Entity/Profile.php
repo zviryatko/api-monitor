@@ -6,39 +6,25 @@
 
 namespace App\Entity;
 
-/**
- * Used for user profile.
- *
- * @Doctrine\ORM\Mapping\Entity
- * @Doctrine\ORM\Mapping\Table(name="profile")
- */
+
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity]
+#[ORM\Table(name: "profile")]
 class Profile implements \JsonSerializable
 {
-
-    /**
-     * @Doctrine\ORM\Mapping\Id
-     * @Doctrine\ORM\Mapping\Column(name="id", type="integer")
-     * @Doctrine\ORM\Mapping\GeneratedValue(strategy="IDENTITY")
-     * @var string
-     */
+    #[ORM\Id]
+    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
 
-    /**
-     * @Doctrine\ORM\Mapping\Column(type="string", length=60, nullable=false, unique=true)
-     * @var string
-     */
+    #[ORM\Column(type: "string", length: 60, nullable: false, unique: true)]
     private $nickname;
 
-    /**
-     * @Doctrine\ORM\Mapping\Column(type="string", length=60, nullable=false, unique=true)
-     * @var string
-     */
+    #[ORM\Column(type: "string", length: 60, nullable: false, unique: true)]
     private $mail;
 
-    /**
-     * @Doctrine\ORM\Mapping\Column(type="array", nullable=false)
-     * @var array
-     */
+    #[ORM\Column(type: "array", nullable: false)]
     private $token;
 
     public function __construct(string $nickname, string $mail, array $token)
@@ -48,7 +34,7 @@ class Profile implements \JsonSerializable
         $this->token = $token;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return [
             'id' => $this->id,

@@ -6,18 +6,20 @@ namespace App\Handler;
 
 use App\Entity\Project;
 use App\Form\Validator\CsrfGuard;
+use DoctrineORMModule\Form\Annotation\EntityBasedFormBuilder;
+use Laminas\Form\Annotation\AttributeBuilder;
+use Laminas\Hydrator\ReflectionHydrator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\HtmlResponse;
-use Zend\Diactoros\Response\RedirectResponse;
-use Zend\Expressive\Csrf\CsrfGuardInterface;
-use Zend\Expressive\Csrf\CsrfMiddleware;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Form\Element\Hidden;
-use Zend\Form\Element\Submit;
-use Zend\Form\FormInterface;
-use Zend\Validator\InArray;
+use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\RedirectResponse;
+use Mezzio\Csrf\CsrfGuardInterface;
+use Mezzio\Csrf\CsrfMiddleware;
+use Laminas\Form\Element\Hidden;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\FormInterface;
+use Laminas\Validator\InArray;
 
 class ProjectFormHandler extends BasePageHandler implements RequestHandlerInterface
 {
@@ -67,10 +69,12 @@ class ProjectFormHandler extends BasePageHandler implements RequestHandlerInterf
 
     private function getForm(Project $project, CsrfGuardInterface $guard): FormInterface
     {
-        $form = (new AnnotationBuilder())->createForm(Project::class);
-        $form->setHydrator(new \Zend\Hydrator\Reflection);
+        $builder = new EntityBasedFormBuilder($this->storage, new AttributeBuilder());
+        $form = $builder->createForm($project);
+        $form->setHydrator(new ReflectionHydrator());
         $form->bind($project);
         $form->add(new Hidden('_csrf'));
+        $form->remove('owner');
         if ($project->getId()) {
             $form->add(new Submit('op', ['value' => 'update']));
         } else {
@@ -83,6 +87,11 @@ class ProjectFormHandler extends BasePageHandler implements RequestHandlerInterf
         $form->getInputFilter()->add([
             'name' => 'alias',
             'required' => true,
+        ]);
+        $form->getInputFilter()->remove('owner');
+        $form->getInputFilter()->add([
+            'name' => 'public',
+            'required' => false,
         ]);
         $form->getInputFilter()->add([
             'name' => '_csrf',
@@ -112,7 +121,7 @@ class ProjectFormHandler extends BasePageHandler implements RequestHandlerInterf
             $project = $this->storage->find(Project::class, $id);
         } else {
             $project = new Project(
-                sprintf('%s\'s Default Project', $profile->nickname()),
+                'Default Project',
                 $profile,
                 sprintf('%s-default', $profile->nickname()),
                 false

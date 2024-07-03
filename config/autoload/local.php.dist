@@ -13,10 +13,18 @@ return [
         'connection' => [
             'orm_default' => [
                 'params' => [
-                    'url' => 'mysql://username:password@localhost/database',
+                    'dbname' => getenv('DB_NAME'),
+                    'user' => getenv('DB_USER'),
+                    'password' => getenv('DB_PASSWORD'),
+                    'host' => getenv('DB_HOST'),
+                    'driver' => getenv('DB_DRIVER'),
                 ],
             ],
         ],
     ],
     'session_key' => '',
+    'google' => [
+        'google_client_id' => getenv('GOOGLE_CLIENT_ID'),
+        'google_client_secret' => getenv('GOOGLE_CLIENT_SECRET'),
+    ],
 ];

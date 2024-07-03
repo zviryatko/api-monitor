@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Expressive\Session\SessionMiddleware;
+use Mezzio\Session\SessionMiddleware;
 
 class AuthenticationMiddleware implements MiddlewareInterface
 {
@@ -41,7 +41,7 @@ class AuthenticationMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        /** @var \Zend\Expressive\Session\SessionInterface $session */
+        /** @var \Mezzio\Session\SessionInterface $session */
         $session = $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
         if ($session->has(self::USER_ID_SESSION_KEY)) {
             $profile = $this->repository->find($session->get(self::USER_ID_SESSION_KEY));

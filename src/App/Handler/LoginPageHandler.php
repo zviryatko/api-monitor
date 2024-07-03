@@ -8,50 +8,52 @@ namespace App\Handler;
 
 use App\Entity\Profile;
 use App\Service\AuthAlert;
+use Auth0\SDK\Auth0;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\HtmlResponse;
-use Zend\Diactoros\Response\RedirectResponse;
+use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\RedirectResponse;
 
 class LoginPageHandler extends BasePageHandler implements RequestHandlerInterface
 {
 
     use AuthorizationTrait;
 
-    protected $client;
+    protected Auth0 $client;
 
-    public function __construct(\Google_Client $googleService, ...$dependencies)
+    public function __construct(Auth0 $auth0, ...$dependencies)
     {
-        $this->client = $googleService;
+        $this->client = $auth0;
         parent::__construct(...$dependencies);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $baseUrl = $request->getUri()->getScheme() . '://' . $request->getUri()->getHost();
+        $login = $baseUrl . $this->router->generateUri('user.login');
+        $params = $request->getQueryParams();
         if ($this->isAuthorized($request)) {
             return new RedirectResponse($this->router->generateUri('home'));
-        } elseif (!empty($request->getQueryParams()['code'])) {
-            $code = $request->getQueryParams()['code'];
-            $token = $this->client->authenticate($code);
-            if (!empty($token['error'])) {
-                $this->alerts->addDanger(new AuthAlert($token['error'], $token['error_description']));
+        } elseif (!empty($params['code']) && !empty($params['state'])) {
+            $status = $this->client->exchange($login, $params['code'], $params['state']);
+            if (!$status) {
+                $this->alerts->addDanger(new AuthAlert("Auth error.", "Auth0 returned an error."));
             } else {
-                $oauthService = new \Google_Service_Oauth2($this->client);
-                $data = $oauthService->userinfo->get();
-                ['email' => $email, 'givenName' => $nickname] = $data;
-                $profile = $this->createProfileIfNotExists($email, $nickname, $token);
+                $session = $this->client->getCredentials();
+                ['email' => $email, 'nickname' => $nickname] = $session->user;
+                $profile = $this->createProfileIfNotExists($email, $nickname, (array) $session);
                 $this->authorize($request, $profile);
-                return new RedirectResponse($this->router->generateUri('home'));
+                return new RedirectResponse($login);
             }
         }
 
         return new HtmlResponse($this->template->render('app::login', [
-            'login_redirect_url' => $this->client->createAuthUrl([\Google_Service_Oauth2::USERINFO_EMAIL]),
+            'login_redirect_url' => $this->client->login($login),
         ]));
     }
 
-    protected function createProfileIfNotExists($email, $nickname, $token): Profile
+    protected function createProfileIfNotExists(string $email, string $nickname, array $token): Profile
     {
         $repo = $this->storage->getRepository(Profile::class);
         $profile = $repo->findOneBy(['mail' => $email]);

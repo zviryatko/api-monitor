@@ -7,10 +7,10 @@
 namespace App\Container;
 
 use Interop\Container\ContainerInterface;
-use Zend\Mail\Transport\Sendmail;
-use Zend\Mail\Transport\Smtp;
-use Zend\Mail\Transport\SmtpOptions;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\Mail\Transport\Sendmail;
+use Laminas\Mail\Transport\Smtp;
+use Laminas\Mail\Transport\SmtpOptions;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class MailTransportFactory implements FactoryInterface
 {

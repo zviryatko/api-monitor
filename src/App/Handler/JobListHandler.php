@@ -8,7 +8,7 @@ use App\Entity\Job;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\HtmlResponse;
 
 class JobListHandler extends BasePageHandler implements RequestHandlerInterface
 {

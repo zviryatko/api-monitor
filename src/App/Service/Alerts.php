@@ -21,7 +21,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function add($type, AlertInterface $message)
+    public function add($type, AlertInterface $message): AlertsInterface|static
     {
         $this->messages[$type][] = $message;
 
@@ -31,7 +31,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function addSuccess(AlertInterface $message)
+    public function addSuccess(AlertInterface $message): AlertsInterface|static
     {
         return $this->add(self::SUCCESS, $message);
     }
@@ -39,7 +39,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function addInfo(AlertInterface $message)
+    public function addInfo(AlertInterface $message): AlertsInterface|static
     {
         return $this->add(self::INFO, $message);
     }
@@ -47,7 +47,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function addWarning(AlertInterface $message)
+    public function addWarning(AlertInterface $message): AlertsInterface|static
     {
         return $this->add(self::WARNING, $message);
     }
@@ -55,7 +55,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function addDanger(AlertInterface $message)
+    public function addDanger(AlertInterface $message): AlertsInterface|static
     {
         return $this->add(self::DANGER, $message);
     }
@@ -63,7 +63,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \RecursiveArrayIterator($this->messages);
     }
@@ -71,7 +71,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->messages[$offset]) && count($this->messages[$offset]);
     }
@@ -79,7 +79,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         if ($this->offsetExists($offset)) {
             return $this->messages[$offset];
@@ -91,7 +91,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new \BadMethodCallException('Use add() method instead.');
     }
@@ -99,7 +99,7 @@ class Alerts implements AlertsInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->messages[$offset]);
     }

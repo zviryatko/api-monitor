@@ -9,14 +9,14 @@ namespace App\Helper;
 use App\Service\AlertsInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Expressive\Template\TemplateRendererInterface;
+use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class TemplateHelperMiddleware implements MiddlewareInterface
 {
     /**
-     * @var \Zend\Expressive\Template\TemplateRendererInterface
+     * @var \Mezzio\Template\TemplateRendererInterface
      */
     protected $renderer;
 

@@ -2,14 +2,13 @@
 
 namespace App\Container;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Cache\Cache;
-use Doctrine\ORM\Configuration;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\ORM\ORMSetup;
 use Interop\Container\ContainerInterface;
+use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class DoctrineFactory
 {
@@ -22,11 +21,10 @@ class DoctrineFactory
             $config['doctrine']['orm']['proxy_namespace'] : 'EntityProxy';
         $autoGenerateProxyClasses = (isset($config['doctrine']['orm']['auto_generate_proxy_classes'])) ?
             $config['doctrine']['orm']['auto_generate_proxy_classes'] : false;
-        $underscoreNamingStrategy = (isset($config['doctrine']['orm']['underscore_naming_strategy'])) ?
-            $config['doctrine']['orm']['underscore_naming_strategy'] : false;
+        $underscoreNamingStrategy = isset($config['doctrine']['orm']['underscore_naming_strategy']) && $config['doctrine']['orm']['underscore_naming_strategy'];
 
         // Doctrine ORM
-        $doctrine = new Configuration();
+        $doctrine = ORMSetup::createAttributeMetadataConfiguration(['src/App/Entity']);
         $doctrine->setProxyDir($proxyDir);
         $doctrine->setProxyNamespace($proxyNamespace);
         $doctrine->setAutoGenerateProxyClasses($autoGenerateProxyClasses);
@@ -34,21 +32,24 @@ class DoctrineFactory
             $doctrine->setNamingStrategy(new UnderscoreNamingStrategy());
         }
 
-        // ORM mapping by Annotation
-        AnnotationRegistry::registerFile('vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
-        $driver = new AnnotationDriver(
-            new AnnotationReader(),
-            ['src/App/Entity']
-        );
-        $doctrine->setMetadataDriverImpl($driver);
-
         // Cache
-        $cache = $container->get(Cache::class);
-        $doctrine->setQueryCacheImpl($cache);
-        $doctrine->setResultCacheImpl($cache);
-        $doctrine->setMetadataCacheImpl($cache);
+//        $cache = $container->get(Cache::class);
+//        $doctrine->setQueryCache($cache);
+//        $doctrine->setResultCache($cache);
+//        $doctrine->setMetadataCache($cache);
+        $queryCache = new PhpFilesAdapter('doctrine_queries');
+        $doctrine->setQueryCache($queryCache);
+        $resultCache = new PhpFilesAdapter('doctrine_results', 0, 'data/cache/');
+        $doctrine->setResultCache($resultCache);
+        $metaCache = new PhpFilesAdapter('doctrine_metadata', 0, 'data/cache/');
+        $doctrine->setMetadataCache($metaCache);
+
+        $connection = DriverManager::getConnection(
+            $config['doctrine']['connection']['orm_default']['params'],
+            $doctrine
+        );
 
         // EntityManager
-        return EntityManager::create($config['doctrine']['connection']['orm_default'], $doctrine);
+        return new EntityManager($connection, $doctrine);
     }
 }

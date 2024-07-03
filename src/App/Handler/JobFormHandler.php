@@ -8,19 +8,25 @@ use App\Entity\Job;
 use App\Entity\Log;
 use App\Entity\Project;
 use App\Form\Validator\CsrfGuard;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
+use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
+use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator;
+use DoctrineORMModule\Form\Annotation\EntityBasedFormBuilder;
+use Laminas\Form\Annotation\AttributeBuilder;
+use Laminas\Hydrator\Aggregate\AggregateHydrator;
+use Laminas\Hydrator\ObjectPropertyHydrator;
+use Laminas\Hydrator\ReflectionHydrator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\HtmlResponse;
-use Zend\Diactoros\Response\RedirectResponse;
-use Zend\Expressive\Csrf\CsrfGuardInterface;
-use Zend\Expressive\Csrf\CsrfMiddleware;
-use Zend\Form\Annotation\AnnotationBuilder;
-use Zend\Form\Element\Hidden;
-use Zend\Form\Element\Submit;
-use Zend\Form\FormInterface;
-use Zend\Validator\InArray;
+use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\RedirectResponse;
+use Mezzio\Csrf\CsrfGuardInterface;
+use Mezzio\Csrf\CsrfMiddleware;
+use Laminas\Form\Element\Hidden;
+use Laminas\Form\Element\Submit;
+use Laminas\Form\FormInterface;
+use Laminas\Validator\InArray;
 
 class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
 {
@@ -79,10 +85,17 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
 
     private function getForm(Job $job, CsrfGuardInterface $guard): FormInterface
     {
-        $form = (new AnnotationBuilder())->createForm(Job::class);
-        $form->setHydrator(new DoctrineObject($this->storage, false));
+        $builder = new EntityBasedFormBuilder($this->storage, new AttributeBuilder());
+        $form = $builder->createForm($job);
+        $hydrator = new AggregateHydrator();
+        $hydrator->add(new ReflectionHydrator(), 2);
+        $hydrator->add(new DoctrineObject($this->storage), 1);
+//        $form->setHydrator(new DoctrineObject($this->storage));
+//        $form->setHydrator(new ReflectionHydrator);
+        $form->setHydrator($hydrator);
         $form->bind($job);
         $form->add(new Hidden('_csrf'));
+        $form->remove('profile');
         if ($job->getId()) {
             $form->add(new Submit('op', ['value' => 'update']));
             $form->add(new Submit('op', ['value' => 'delete']));
@@ -90,31 +103,32 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
             $form->add(new Submit('op', ['value' => 'add']));
         }
         $form->getInputFilter()
+            ->remove('profile')
             ->add([
-            'name' => 'name',
-            'required' => true,
-        ])
+                'name' => 'name',
+                'required' => true,
+            ])
             ->add([
-            'name' => 'command',
-            'required' => true,
-        ])
+                'name' => 'command',
+                'required' => true,
+            ])
             ->add([
-            'name' => '_csrf',
-            'required' => true,
-            'validators' => [new CsrfGuard($guard)],
-        ])
+                'name' => '_csrf',
+                'required' => true,
+                'validators' => [new CsrfGuard($guard)],
+            ])
             ->add([
-            'name' => 'op',
-            'required' => true,
-            'validators' => [
-                new InArray([
-                    'haystack' => $job->getId() ? ['update', 'delete'] : ['add'],
-                    'messageTemplates' => [
-                        InArray::NOT_IN_ARRAY => 'Wrong action, please use Add, Update or Delete button.',
-                    ],
-                ]),
-            ],
-        ])
+                'name' => 'op',
+                'required' => true,
+                'validators' => [
+                    new InArray([
+                        'haystack' => $job->getId() ? ['update', 'delete'] : ['add'],
+                        'messageTemplates' => [
+                            InArray::NOT_IN_ARRAY => 'Wrong action, please use Add, Update or Delete button.',
+                        ],
+                    ]),
+                ],
+            ])
             ->add([
                 'name' => 'project',
                 'required' => true,
@@ -148,7 +162,7 @@ class JobFormHandler extends BasePageHandler implements RequestHandlerInterface
         $project = $this->storage->getRepository(Project::class)->findOneBy(['owner' => $profile->id()]);
         if (!$project) {
             $project = new Project(
-                sprintf('%s\'s Default Project', $profile->nickname()),
+                'Default Project',
                 $profile,
                 sprintf('%s-default', $profile->nickname()),
                 false

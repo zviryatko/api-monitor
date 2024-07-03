@@ -1,0 +1,63 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: "${PROJECT_NAME}_mysql"
+    stop_grace_period: 30s
+    ports:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: api_monitor
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: "mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD --execute \"SHOW DATABASES;\" || exit 1"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - db:/var/lib/mysql
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        WWW_DATA_UID: ${WWW_DATA_UID}
+        WWW_DATA_GID: ${WWW_DATA_GID}
+    container_name: "${PROJECT_NAME}_app"
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html/
+      - ~/.composer:/home/web-user/.composer
+    environment:
+      COMPOSER_CACHE_DIR: /home/web-user/.composer/cache
+      PHP_OPCACHE_ENABLE: 1
+      DB_HOST: mysql
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_NAME: api_monitor
+      DB_DRIVER: pdo_mysql
+      COLUMNS: 280
+      PHP_IDE_CONFIG: "serverName=Docker"
+    env_file:
+      - .env
+    labels:
+      - "traefik.http.routers.${PROJECT_NAME}_app.rule=Host(`${PROJECT_BASE_URL}`)"
+      - "traefik.http.routers.${PROJECT_NAME}_app_local.rule=Host(`localhost`)"
+      - "traefik.http.routers.${PROJECT_NAME}_app_https.rule=Host(`${PROJECT_BASE_URL}`)"
+      - "traefik.http.middlewares.${PROJECT_NAME}_app_https.redirectscheme.scheme=https"
+      - "traefik.http.routers.${PROJECT_NAME}_app_https.entrypoints=https"
+      - "traefik.http.routers.${PROJECT_NAME}_app_https.tls=true"
+    networks:
+      default:
+        aliases:
+          - '${PROJECT_BASE_URL}'
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  db:
+  index:

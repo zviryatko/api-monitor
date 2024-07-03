@@ -2,38 +2,25 @@
 
 namespace App\Entity;
 
-/**
- * @Doctrine\ORM\Mapping\Entity
- * @Doctrine\ORM\Mapping\Table(name="log")
- */
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity]
+#[ORM\Table(name: "log")]
 class Log implements \JsonSerializable
 {
-
-    /**
-     * @Doctrine\ORM\Mapping\Id
-     * @Doctrine\ORM\Mapping\Column(name="id", type="integer")
-     * @Doctrine\ORM\Mapping\GeneratedValue(strategy="IDENTITY")
-     * @var int
-     */
+    #[ORM\Id]
+    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private $id;
 
-    /**
-     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="Job", inversedBy="logs")
-     * @Doctrine\ORM\Mapping\JoinColumn(name="job_id", referencedColumnName="id", nullable=false)
-     * @var \App\Entity\Job
-     */
+    #[ORM\ManyToOne(targetEntity: Job::class, inversedBy: "logs")]
+    #[ORM\JoinColumn(name: "job_id", referencedColumnName: "id", nullable: false)]
     private $job;
 
-    /**
-     * @Doctrine\ORM\Mapping\Column(name="up", type="boolean", nullable=false)
-     * @var bool
-     */
+    #[ORM\Column(name: "up", type: "boolean", nullable: false)]
     private $up;
 
-    /**
-     * @Doctrine\ORM\Mapping\Column(name="created", type="datetime", nullable=false)
-     * @var \DateTime
-     */
+    #[ORM\Column(name: "created", type: "datetime", nullable: false)]
     private $created;
 
     /**
@@ -50,7 +37,7 @@ class Log implements \JsonSerializable
         $this->created = $created ?? new \DateTime('now');
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return [
             'id' => $this->id,

@@ -8,14 +8,15 @@ namespace App\Handler;
 
 
 use App\Service\AlertsInterface;
+use Auth0\SDK\Auth0;
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
-use Zend\Expressive\Router\RouterInterface;
-use Zend\Expressive\Template\TemplateRendererInterface;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Mezzio\Router\RouterInterface;
+use Mezzio\Template\TemplateRendererInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class LoginPageHandlerFactory implements FactoryInterface
 {
@@ -36,7 +37,7 @@ class LoginPageHandlerFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new LoginPageHandler(
-            $container->get(\Google_Client::class),
+            $container->get(Auth0::class),
             $container->get(RouterInterface::class),
             $container->get(TemplateRendererInterface::class),
             $container->get(EntityManager::class),
