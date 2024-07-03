@@ -13,6 +13,9 @@
 
 ## Setup
 
+> [!WARNING]  
+> Restrict login in Auth0 to only specific user. Don't allow free access/registration.
+
 `composer install`
 
 Provide then ext env vars:
@@ -46,3 +49,14 @@ And finally add crontab.
 */5 * * * * /path/to/api-monitor/vendor/bin/laminas monitor:all
 0 0 * * * /path/to/api-monitor/vendor/bin/laminas monitor:clear
 ```
+
+## Demo
+
+https://github.com/zviryatko/api-monitor/assets/1087411/8b1d5286-dfb3-4889-bde7-70c6378be486
+
+## TODO
+
+- [ ] Add registration without SSO, account creation restriction.
+- [ ] Allow set http headers and other request params, like timeout.
+- [ ] Add easy setup script.
+- [ ] Add tests, security coverage.
